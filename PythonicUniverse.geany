@@ -18,8 +18,15 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=0
-FILE_NAME_0=35;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/PythonicUniverse.py;0;4
+current_page=6
+FILE_NAME_0=1256;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/our_future.py;0;4
+FILE_NAME_1=1062;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/Application.py;0;4
+FILE_NAME_2=5681;Python;0;16;0;1;1;/home/horazont/Projects/python/sfml/test.py;0;4
+FILE_NAME_3=1319;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/py-universe.py;0;4
+FILE_NAME_4=0;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/pyUniverse/__init__.py;0;4
+FILE_NAME_5=740;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/pyUniverse/PythonicUniverse.py;0;4
+FILE_NAME_6=112;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/Widget.py;0;4
+FILE_NAME_7=541;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/BoxModel.py;0;4
 
 [VTE]
 last_dir=/var/www/dataroot/horazont/priyomdb
