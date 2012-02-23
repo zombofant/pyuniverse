@@ -24,11 +24,15 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
-from Engine.Application import Window
+from Engine.Application import Window, Application
 from OpenGL.GL import *
 import math
 
-class PythonicUniverse(Window):
+class PythonicUniverse(Application):
+    def makeWin(self, geometry, ui_logical):
+        return PythonicUniverseWindow(geometry, ui_logical)
+
+class PythonicUniverseWindow(Window):
     def __init__(self, **kwargs):
         super(PythonicUniverse, self).__init__(**kwargs)
         self._initGL()
@@ -59,7 +63,7 @@ class PythonicUniverse(Window):
         if self._quadRot > 2.*math.pi:
             self._quadRot -= int(self._quadRot/math.pi)*math.pi
 
-    def render(self):
+    def on_draw(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         xoffs = 5. * math.cos(self._quadRot)
@@ -80,8 +84,6 @@ class PythonicUniverse(Window):
         glVertex2f(*v4)
         glEnd()
 
-        self.window.Display()
-
     def onResized(self, event):
         super(PythonicUniverse, self).onResized(event)
         glViewport(0, 0, self._width, self._height)
@@ -89,4 +91,3 @@ class PythonicUniverse(Window):
 
     def onMouseMoved(self, event):
         self._quadPos = (event.MouseMove.X, event.MouseMove.Y)
-
