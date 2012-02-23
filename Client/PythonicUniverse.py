@@ -29,10 +29,6 @@ from OpenGL.GL import *
 import math
 
 class PythonicUniverse(Application):
-    def makeWin(self, geometry, ui_logical):
-        return PythonicUniverseWindow(geometry, ui_logical)
-
-class PythonicUniverseWindow(Window):
     def __init__(self, **kwargs):
         super(PythonicUniverse, self).__init__(**kwargs)
         self._initGL()
