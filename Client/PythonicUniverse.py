@@ -40,7 +40,7 @@ class Scene(SceneWidget):
         self.rotX = 0.
         self.rotY = 0.
         path = os.path.dirname(sys.argv[0])
-        self._cubeTestModel = OBJModel(open('%s/data/models/cube.obj' % path))
+        self._cubeTestModel = OBJModel(open('%s/data/models/cone.obj' % path))
     
     def renderScene(self):
         self._setupProjection()
