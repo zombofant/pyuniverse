@@ -30,9 +30,17 @@ from OpenGL.GL import *
 import math
 
 class Scene(SceneWidget):
+    def __init__(self, parent, **kwargs):
+        super(Scene, self).__init__(parent)
+        self.rotX = 0.
+        self.rotY = 0.
+    
     def renderScene(self):
         self._setupProjection()
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glTranslatef(0.0, 0.0, -5.0)
+        glRotatef(self.rotX, 1.0, 0.0, 0.0)
+        glRotatef(self.rotY, 0.0, 1.0, 0.0)
         glColor4f(1.0, 1.0, 1.0, 1.0)
         glBegin(GL_QUADS)
         glVertex3f(-1.0, -1.0, -1.0)
@@ -55,18 +63,25 @@ class Scene(SceneWidget):
         glVertex3f(-1.0,  1.0,  1.0)
         glVertex3f(-1.0,  1.0, -1.0)
         
-        glVertex3f(-1.0, -1.0,  1.0)
+        glVertex3f(-1.0, -1.0, -1.0)
         glVertex3f( 1.0, -1.0, -1.0)
-        glVertex3f( 1.0, -1.0, -1.0)
+        glVertex3f( 1.0, -1.0,  1.0)
         glVertex3f(-1.0, -1.0,  1.0)
         
-        glVertex3f(-1.0,  1.0,  1.0)
-        glVertex3f( 1.0, -1.0, -1.0)
-        glVertex3f( 1.0, -1.0, -1.0)
+        glVertex3f(-1.0,  1.0, -1.0)
+        glVertex3f( 1.0,  1.0, -1.0)
+        glVertex3f( 1.0,  1.0,  1.0)
         glVertex3f(-1.0,  1.0,  1.0)
         glEnd()
         glLoadIdentity()
         self._resetProjection()
+
+    def update(self, timeDelta):
+        self.rotX += timeDelta * 30.0
+        self.rotY += timeDelta * 45.0
+        self.rotX -= (self.rotX // 360) * 360
+        self.rotY -= (self.rotY // 360) * 360
+        # print(timeDelta)
 
 class PythonicUniverse(Application):
     def __init__(self, **kwargs):
