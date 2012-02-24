@@ -18,8 +18,18 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=0
-FILE_NAME_0=35;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/PythonicUniverse.py;0;4
+current_page=10
+FILE_NAME_0=72;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/our_future.py;0;4
+FILE_NAME_1=1891;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/Application.py;0;4
+FILE_NAME_2=5681;Python;0;16;0;1;1;/home/horazont/Projects/python/sfml/test.py;0;4
+FILE_NAME_3=1202;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/py-universe.py;0;4
+FILE_NAME_4=1190;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/Widget.py;0;4
+FILE_NAME_5=1454;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/BoxModel.py;0;4
+FILE_NAME_6=14214;Python;0;16;0;1;1;/usr/lib/python2.7/site-packages/pyglet/graphics/vertexdomain.py;0;4
+FILE_NAME_7=4083;Python;0;16;0;1;1;/usr/lib/python2.7/site-packages/pyglet/graphics/vertexbuffer.py;0;4
+FILE_NAME_8=3675;Python;0;16;0;1;1;/usr/lib/python2.7/site-packages/pyglet/graphics/allocation.py;0;4
+FILE_NAME_9=102;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/unitest.py;0;4
+FILE_NAME_10=66;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/.local/pyglet-test.py;0;4
 
 [VTE]
 last_dir=/var/www/dataroot/horazont/priyomdb

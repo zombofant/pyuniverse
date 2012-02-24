@@ -1,0 +1,10 @@
+TODO LIST
+
+Engine
+======
+
+Application.py
+--------------
+
+-Remap modifiers to be platform independent and consistent (IMHO mapping
+ Command and Ctrl to one modifier is broken)

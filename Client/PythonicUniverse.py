@@ -24,70 +24,73 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
-from Engine.Application import Window
+from Engine.Application import Window, Application
+from Engine.UI import SceneWidget
 from OpenGL.GL import *
 import math
+import pyglet
+key = pyglet.window.key
 
-class PythonicUniverse(Window):
+class Scene(SceneWidget):
+    def __init__(self, parent, **kwargs):
+        super(Scene, self).__init__(parent)
+        self.rotX = 0.
+        self.rotY = 0.
+    
+    def renderScene(self):
+        self._setupProjection()
+        glTranslatef(0.0, 0.0, -5.0)
+        glRotatef(self.rotX, 1.0, 0.0, 0.0)
+        glRotatef(self.rotY, 0.0, 1.0, 0.0)
+        glColor4f(1.0, 1.0, 1.0, 1.0)
+        glBegin(GL_QUADS)
+        glVertex3f(-1.0, -1.0, -1.0)
+        glVertex3f(-1.0,  1.0, -1.0)
+        glVertex3f( 1.0,  1.0, -1.0)
+        glVertex3f( 1.0, -1.0, -1.0)
+        
+        glVertex3f(-1.0, -1.0,  1.0)
+        glVertex3f(-1.0,  1.0,  1.0)
+        glVertex3f( 1.0,  1.0,  1.0)
+        glVertex3f( 1.0, -1.0,  1.0)
+        
+        glVertex3f( 1.0, -1.0, -1.0)
+        glVertex3f( 1.0, -1.0,  1.0)
+        glVertex3f( 1.0,  1.0,  1.0)
+        glVertex3f( 1.0,  1.0, -1.0)
+        
+        glVertex3f(-1.0, -1.0, -1.0)
+        glVertex3f(-1.0, -1.0,  1.0)
+        glVertex3f(-1.0,  1.0,  1.0)
+        glVertex3f(-1.0,  1.0, -1.0)
+        
+        glVertex3f(-1.0, -1.0, -1.0)
+        glVertex3f( 1.0, -1.0, -1.0)
+        glVertex3f( 1.0, -1.0,  1.0)
+        glVertex3f(-1.0, -1.0,  1.0)
+        
+        glVertex3f(-1.0,  1.0, -1.0)
+        glVertex3f( 1.0,  1.0, -1.0)
+        glVertex3f( 1.0,  1.0,  1.0)
+        glVertex3f(-1.0,  1.0,  1.0)
+        glEnd()
+        glLoadIdentity()
+        self._resetProjection()
+
+    def update(self, timeDelta):
+        self.rotX += timeDelta * 30.0
+        self.rotY += timeDelta * 45.0
+        self.rotX -= (self.rotX // 360) * 360
+        self.rotY -= (self.rotY // 360) * 360
+        # print(timeDelta)
+
+class PythonicUniverse(Application):
     def __init__(self, **kwargs):
         super(PythonicUniverse, self).__init__(**kwargs)
-        self._initGL()
-        self._initScrap()
+        scene = Scene(self.windows[0][1])
+        self.addSceneWidget(scene)
 
-    def _initGL(self):
-        # always have your clear color set to something other than
-        # black. If you ever debugged drawing problems with supposedly
-        # missing vertices which were just black, you know what I'm
-        # talking about...
-        glClearColor(0.1, 0.1, 0.1, 1.0)
-        glViewport(0, 0, self._width, self._height)
-        self._setupOrtho(self._width, self._height)
-
-    def _initScrap(self):
-        self._quadPos = (0, 0)
-        self._quadRot = 0.
-
-    def _setupOrtho(self, width, height):
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        glOrtho(0, width, height, 0, -10, 10)
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-
-    def updateUnsynced(self, timeDelta):
-        self._quadRot += timeDelta * math.pi
-        if self._quadRot > 2.*math.pi:
-            self._quadRot -= int(self._quadRot/math.pi)*math.pi
-
-    def render(self):
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-        xoffs = 5. * math.cos(self._quadRot)
-        yoffs = 5. * math.sin(self._quadRot)
-
-        x0, y0 = self._quadPos
-
-        v1, v2, v3, v4 = (
-            (x0 - xoffs, y0 - yoffs),
-            (x0 - xoffs, y0 + yoffs),
-            (x0 + xoffs, y0 + yoffs),
-            (x0 + xoffs, y0 - yoffs),
-        )
-        glBegin(GL_QUADS)
-        glVertex2f(*v1)
-        glVertex2f(*v2)
-        glVertex2f(*v3)
-        glVertex2f(*v4)
-        glEnd()
-
-        self.window.Display()
-
-    def onResized(self, event):
-        super(PythonicUniverse, self).onResized(event)
-        glViewport(0, 0, self._width, self._height)
-        self._setupOrtho(self._width, self._height)
-
-    def onMouseMoved(self, event):
-        self._quadPos = (event.MouseMove.X, event.MouseMove.Y)
-
-
+    def onKeyDown(self, symbol, modifiers):
+        if symbol == key.ESCAPE:
+            # FIXME: make this without an pyglet.app reference
+            pyglet.app.exit()
