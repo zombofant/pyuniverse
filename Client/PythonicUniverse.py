@@ -26,9 +26,12 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 from Engine.Application import Window, Application
 from Engine.UI import SceneWidget
+from Engine.Model import OBJModel
 from OpenGL.GL import *
 import math
 import pyglet
+import os
+import sys
 key = pyglet.window.key
 
 class Scene(SceneWidget):
@@ -36,6 +39,8 @@ class Scene(SceneWidget):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
         self.rotY = 0.
+        path = os.path.dirname(sys.argv[0])
+        self._cubeTestModel = OBJModel(open('%s/data/models/cube.obj' % path))
     
     def renderScene(self):
         self._setupProjection()
@@ -43,37 +48,7 @@ class Scene(SceneWidget):
         glRotatef(self.rotX, 1.0, 0.0, 0.0)
         glRotatef(self.rotY, 0.0, 1.0, 0.0)
         glColor4f(1.0, 1.0, 1.0, 1.0)
-        glBegin(GL_QUADS)
-        glVertex3f(-1.0, -1.0, -1.0)
-        glVertex3f(-1.0,  1.0, -1.0)
-        glVertex3f( 1.0,  1.0, -1.0)
-        glVertex3f( 1.0, -1.0, -1.0)
-        
-        glVertex3f(-1.0, -1.0,  1.0)
-        glVertex3f(-1.0,  1.0,  1.0)
-        glVertex3f( 1.0,  1.0,  1.0)
-        glVertex3f( 1.0, -1.0,  1.0)
-        
-        glVertex3f( 1.0, -1.0, -1.0)
-        glVertex3f( 1.0, -1.0,  1.0)
-        glVertex3f( 1.0,  1.0,  1.0)
-        glVertex3f( 1.0,  1.0, -1.0)
-        
-        glVertex3f(-1.0, -1.0, -1.0)
-        glVertex3f(-1.0, -1.0,  1.0)
-        glVertex3f(-1.0,  1.0,  1.0)
-        glVertex3f(-1.0,  1.0, -1.0)
-        
-        glVertex3f(-1.0, -1.0, -1.0)
-        glVertex3f( 1.0, -1.0, -1.0)
-        glVertex3f( 1.0, -1.0,  1.0)
-        glVertex3f(-1.0, -1.0,  1.0)
-        
-        glVertex3f(-1.0,  1.0, -1.0)
-        glVertex3f( 1.0,  1.0, -1.0)
-        glVertex3f( 1.0,  1.0,  1.0)
-        glVertex3f(-1.0,  1.0,  1.0)
-        glEnd()
+        self._cubeTestModel.draw()
         glLoadIdentity()
         self._resetProjection()
 
