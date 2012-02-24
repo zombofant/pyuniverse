@@ -37,7 +37,6 @@ class Scene(SceneWidget):
     
     def renderScene(self):
         self._setupProjection()
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glTranslatef(0.0, 0.0, -5.0)
         glRotatef(self.rotX, 1.0, 0.0, 0.0)
         glRotatef(self.rotY, 0.0, 1.0, 0.0)
@@ -85,6 +84,6 @@ class Scene(SceneWidget):
 
 class PythonicUniverse(Application):
     def __init__(self, **kwargs):
-        super(PythonicUniverse, self).__init__(**kwargs)
+        super(PythonicUniverse, self).__init__(fullscreen=True, **kwargs)
         scene = Scene(self.windows[0][1])
         self.addSceneWidget(scene)
