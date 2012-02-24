@@ -28,6 +28,8 @@ from Engine.Application import Window, Application
 from Engine.UI import SceneWidget
 from OpenGL.GL import *
 import math
+import pyglet
+key = pyglet.window.key
 
 class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
@@ -84,6 +86,11 @@ class Scene(SceneWidget):
 
 class PythonicUniverse(Application):
     def __init__(self, **kwargs):
-        super(PythonicUniverse, self).__init__(fullscreen=True, **kwargs)
+        super(PythonicUniverse, self).__init__(**kwargs)
         scene = Scene(self.windows[0][1])
         self.addSceneWidget(scene)
+
+    def onKeyDown(self, symbol, modifiers):
+        if symbol == key.ESCAPE:
+            # FIXME: make this without an pyglet.app reference
+            pyglet.app.exit()
