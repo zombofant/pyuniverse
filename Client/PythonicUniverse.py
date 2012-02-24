@@ -25,10 +25,51 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 from Engine.Application import Window, Application
+from Engine.UI import SceneWidget
 from OpenGL.GL import *
 import math
+
+class Scene(SceneWidget):
+    def renderScene(self):
+        self._setupProjection()
+        glTranslatef(0.0, 0.0, -5.0)
+        glColor4f(1.0, 1.0, 1.0, 1.0)
+        glBegin(GL_QUADS)
+        glVertex3f(-1.0, -1.0, -1.0)
+        glVertex3f(-1.0,  1.0, -1.0)
+        glVertex3f( 1.0,  1.0, -1.0)
+        glVertex3f( 1.0, -1.0, -1.0)
+        
+        glVertex3f(-1.0, -1.0,  1.0)
+        glVertex3f(-1.0,  1.0,  1.0)
+        glVertex3f( 1.0,  1.0,  1.0)
+        glVertex3f( 1.0, -1.0,  1.0)
+        
+        glVertex3f( 1.0, -1.0, -1.0)
+        glVertex3f( 1.0, -1.0,  1.0)
+        glVertex3f( 1.0,  1.0,  1.0)
+        glVertex3f( 1.0,  1.0, -1.0)
+        
+        glVertex3f(-1.0, -1.0, -1.0)
+        glVertex3f(-1.0, -1.0,  1.0)
+        glVertex3f(-1.0,  1.0,  1.0)
+        glVertex3f(-1.0,  1.0, -1.0)
+        
+        glVertex3f(-1.0, -1.0,  1.0)
+        glVertex3f( 1.0, -1.0, -1.0)
+        glVertex3f( 1.0, -1.0, -1.0)
+        glVertex3f(-1.0, -1.0,  1.0)
+        
+        glVertex3f(-1.0,  1.0,  1.0)
+        glVertex3f( 1.0, -1.0, -1.0)
+        glVertex3f( 1.0, -1.0, -1.0)
+        glVertex3f(-1.0,  1.0,  1.0)
+        glEnd()
+        glLoadIdentity()
+        self._resetProjection()
 
 class PythonicUniverse(Application):
     def __init__(self, **kwargs):
         super(PythonicUniverse, self).__init__(**kwargs)
-        pass
+        scene = Scene(self.windows[0][1])
+        self.addSceneWidget(scene)
