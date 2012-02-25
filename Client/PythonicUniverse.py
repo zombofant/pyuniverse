@@ -38,25 +38,26 @@ class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
-        self.rotY = 0.
+        self.rotZ = 0.
         path = os.path.dirname(sys.argv[0])
-        self._cubeTestModel = OBJModel(open('%s/data/models/cube.obj' % path))
+        with open('%s/data/models/cone.obj' % path) as objf:
+            self._cubeTestModel = OBJModel(objf)
     
     def renderScene(self):
         self._setupProjection()
         glTranslatef(0.0, 0.0, -5.0)
         glRotatef(self.rotX, 1.0, 0.0, 0.0)
-        glRotatef(self.rotY, 0.0, 1.0, 0.0)
-        glColor4f(1.0, 1.0, 1.0, 1.0)
+        glRotatef(self.rotZ, 0.0, 0.0, 1.0)
+        glColor4f(0.2, 0.5, 0.2, 1.0)
         self._cubeTestModel.draw()
         glLoadIdentity()
         self._resetProjection()
 
     def update(self, timeDelta):
         self.rotX += timeDelta * 30.0
-        self.rotY += timeDelta * 45.0
+        self.rotZ += timeDelta * 45.0
         self.rotX -= (self.rotX // 360) * 360
-        self.rotY -= (self.rotY // 360) * 360
+        self.rotZ -= (self.rotZ // 360) * 360
         # print(timeDelta)
 
 class PythonicUniverse(Application):
