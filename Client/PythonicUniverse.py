@@ -62,10 +62,11 @@ class Scene(SceneWidget):
         # print(timeDelta)
 
 class PythonicUniverse(Application):
-    def __init__(self, **kwargs):
+    def __init__(self, mountCWDData=True, **kwargs):
         super(PythonicUniverse, self).__init__(**kwargs)
         vfs = XDGFileSystem('pyuniverse')
-        vfs.mount('/data', MountDirectory(os.path.join(os.getcwd(), "data")), MountPriority.FileSystem)
+        if mountCWDData:
+            vfs.mount('/data', MountDirectory(os.path.join(os.getcwd(), "data")), MountPriority.FileSystem)
         
         ResourceManager(vfs)
         
