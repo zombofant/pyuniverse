@@ -24,18 +24,20 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
+
+from OpenGL.GL import *
+import math
+import pyglet
+import pyglet.window.key as key
+import os
+import sys
+
 from Engine.Application import Window, Application
 from Engine.UI import SceneWidget
 from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
 from Engine.VFS.Mounts import MountDirectory
 from Engine.Resources.Manager import ResourceManager
 from Engine.Resources.Model import OBJModelLoader
-from OpenGL.GL import *
-import math
-import pyglet
-import os
-import sys
-key = pyglet.window.key
 
 class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
