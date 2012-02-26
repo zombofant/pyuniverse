@@ -25,8 +25,6 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 from Engine.Application import Window, Application
-from Engine.Resources.Manager import ResourceManager
-from Engine.Resources.Text import TextLoader
 from Engine.UI import SceneWidget
 from Engine.Model import OBJModel
 from OpenGL.GL import *
@@ -44,10 +42,6 @@ class Scene(SceneWidget):
         path = os.path.dirname(sys.argv[0])
         with open('%s/data/models/cone.obj' % path) as objf:
             self._cubeTestModel = OBJModel(objf)
-        manager = ResourceManager()
-        manager2 = ResourceManager()
-        print(manager._resourceLoaders)
-        print(type(manager.require('/bla.txt')))
     
     def renderScene(self):
         self._setupProjection()
