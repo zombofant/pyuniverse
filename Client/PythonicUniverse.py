@@ -69,9 +69,9 @@ class PythonicUniverse(Application):
         vfs = XDGFileSystem('pyuniverse')
         if mountCWDData:
             vfs.mount('/data', MountDirectory(os.path.join(os.getcwd(), "data")), MountPriority.FileSystem)
-        
+
         ResourceManager(vfs)
-        
+
         scene = Scene(self.windows[0][1])
         self.addSceneWidget(scene)
 
