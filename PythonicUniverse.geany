@@ -18,17 +18,8 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=9
-FILE_NAME_0=72;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/our_future.py;0;4
-FILE_NAME_1=1056;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/Application.py;0;4
-FILE_NAME_2=1202;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/py-universe.py;0;4
-FILE_NAME_3=1051;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/Widget.py;0;4
-FILE_NAME_4=1454;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/BoxModel.py;0;4
-FILE_NAME_5=5160;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/unitest.py;0;4
-FILE_NAME_6=350;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/.local/remote-update-hook;0;4
-FILE_NAME_7=8300;Python;0;16;0;1;1;/usr/lib/python2.7/site-packages/pyglet/resource.py;0;4
-FILE_NAME_8=1402;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/test_BoxModel.py;0;4
-FILE_NAME_9=0;C++;0;16;0;1;1;/home/horazont/Projects/c++/tt3d/modules/io/vfs/VFS.hpp;0;4
+current_page=0
+FILE_NAME_0=436;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/py-universe.py;0;4
 
 [VTE]
 last_dir=/var/www/dataroot/horazont/priyomdb
