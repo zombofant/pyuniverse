@@ -26,7 +26,8 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 from Engine.Application import Window, Application
 from Engine.UI import SceneWidget
-from Engine.VFS.FileSystem import XDGFileSystem
+from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
+from Engine.VFS.Mounts import MountDirectory
 from Engine.Resources.Manager import ResourceManager
 from Engine.Resources.Model import OBJModelLoader
 from OpenGL.GL import *
@@ -41,8 +42,7 @@ class Scene(SceneWidget):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
         self.rotZ = 0.
-        resManager = ResourceManager(XDGFileSystem('pyuniverse'))
-        self._testModel = resManager.require('/data/models/cone.obj')
+        self._testModel = ResourceManager().require('/data/models/cone.obj')
     
     def renderScene(self):
         self._setupProjection()
@@ -64,6 +64,11 @@ class Scene(SceneWidget):
 class PythonicUniverse(Application):
     def __init__(self, **kwargs):
         super(PythonicUniverse, self).__init__(**kwargs)
+        vfs = XDGFileSystem('pyuniverse')
+        vfs.mount('/data', MountDirectory(os.path.join(os.getcwd(), "data")), MountPriority.FileSystem)
+        
+        ResourceManager(vfs)
+        
         scene = Scene(self.windows[0][1])
         self.addSceneWidget(scene)
 
