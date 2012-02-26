@@ -26,7 +26,9 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 from Engine.Application import Window, Application
 from Engine.UI import SceneWidget
-from Engine.Model import OBJModel
+from Engine.VFS.FileSystem import XDGFileSystem
+from Engine.Resources.Manager import ResourceManager
+from Engine.Resources.Model import OBJModelLoader
 from OpenGL.GL import *
 import math
 import pyglet
@@ -39,9 +41,8 @@ class Scene(SceneWidget):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
         self.rotZ = 0.
-        path = os.path.dirname(sys.argv[0])
-        with open('%s/data/models/cone.obj' % path) as objf:
-            self._cubeTestModel = OBJModel(objf)
+        resManager = ResourceManager(XDGFileSystem('pyuniverse'))
+        self._testModel = resManager.require('/data/models/cone.obj')
     
     def renderScene(self):
         self._setupProjection()
@@ -49,7 +50,7 @@ class Scene(SceneWidget):
         glRotatef(self.rotX, 1.0, 0.0, 0.0)
         glRotatef(self.rotZ, 0.0, 0.0, 1.0)
         glColor4f(0.2, 0.5, 0.2, 1.0)
-        self._cubeTestModel.draw()
+        self._testModel.draw()
         glLoadIdentity()
         self._resetProjection()
 
