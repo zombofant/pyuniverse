@@ -37,14 +37,15 @@ from Engine.UI import SceneWidget
 from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
 from Engine.VFS.Mounts import MountDirectory
 from Engine.Resources.Manager import ResourceManager
-from Engine.Resources.Model import OBJModelLoader
+from Engine.Resources.ModelLoader import OBJModelLoader
+from Engine.GL.RenderModel import RenderModel
 
 class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
         self.rotZ = 0.
-        self._testModel = ResourceManager().require('/data/models/cone.obj')
+        self._testModel = ResourceManager().require('/data/models/cone.obj', RenderModel)
     
     def renderScene(self):
         self._setupProjection()
