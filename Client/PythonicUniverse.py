@@ -54,6 +54,7 @@ class Scene(SceneWidget):
         glRotatef(self.rotX, 1.0, 0.0, 0.0)
         glRotatef(self.rotZ, 0.0, 0.0, 1.0)
         glColor4f(1.0, 1.0, 1.0, 1.0)
+        glScalef(0.35,0.35,0.35)
         self._testModel.draw()
         glLoadIdentity()
         self._resetProjection()
