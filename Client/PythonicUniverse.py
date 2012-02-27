@@ -24,24 +24,28 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
-from Engine.Application import Window, Application
-from Engine.UI import SceneWidget
-from Engine.Model import OBJModel
+
 from OpenGL.GL import *
 import math
 import pyglet
+import pyglet.window.key as key
 import os
 import sys
-key = pyglet.window.key
+
+from Engine.Application import Window, Application
+from Engine.UI import SceneWidget
+from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
+from Engine.VFS.Mounts import MountDirectory
+from Engine.Resources.Manager import ResourceManager
+from Engine.Resources.ModelLoader import OBJModelLoader
+from Engine.GL.RenderModel import RenderModel
 
 class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
         self.rotZ = 0.
-        path = os.path.dirname(sys.argv[0])
-        with open('%s/data/models/cone.obj' % path) as objf:
-            self._cubeTestModel = OBJModel(objf)
+        self._testModel = ResourceManager().require('/data/models/cone.obj', RenderModel)
     
     def renderScene(self):
         self._setupProjection()
@@ -49,7 +53,7 @@ class Scene(SceneWidget):
         glRotatef(self.rotX, 1.0, 0.0, 0.0)
         glRotatef(self.rotZ, 0.0, 0.0, 1.0)
         glColor4f(0.2, 0.5, 0.2, 1.0)
-        self._cubeTestModel.draw()
+        self._testModel.draw()
         glLoadIdentity()
         self._resetProjection()
 
@@ -61,8 +65,14 @@ class Scene(SceneWidget):
         # print(timeDelta)
 
 class PythonicUniverse(Application):
-    def __init__(self, **kwargs):
+    def __init__(self, mountCWDData=True, **kwargs):
         super(PythonicUniverse, self).__init__(**kwargs)
+        vfs = XDGFileSystem('pyuniverse')
+        if mountCWDData:
+            vfs.mount('/data', MountDirectory(os.path.join(os.getcwd(), "data")), MountPriority.FileSystem)
+
+        ResourceManager(vfs)
+
         scene = Scene(self.windows[0][1])
         self.addSceneWidget(scene)
 
@@ -70,3 +80,4 @@ class PythonicUniverse(Application):
         if symbol == key.ESCAPE:
             # FIXME: make this without an pyglet.app reference
             pyglet.app.exit()
+
