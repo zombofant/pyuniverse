@@ -18,8 +18,33 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=0
+current_page=24
 FILE_NAME_0=436;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/py-universe.py;0;4
+FILE_NAME_1=0;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/Flags.py;0;4
+FILE_NAME_2=0;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/Rect.py;0;4
+FILE_NAME_3=0;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/Root.py;0;4
+FILE_NAME_4=1051;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/Scene.py;0;4
+FILE_NAME_5=1111;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/Screen.py;0;4
+FILE_NAME_6=1108;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/Widget.py;0;4
+FILE_NAME_7=1166;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/GL/Texture.py;0;4
+FILE_NAME_8=1451;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/GL/Base.py;0;4
+FILE_NAME_9=1170;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/GL/Framebuffer.py;0;4
+FILE_NAME_10=1058;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/GL/Renderbuffer.py;0;4
+FILE_NAME_11=1955;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/GL/Shader.py;0;4
+FILE_NAME_12=24264;Python;0;16;0;1;1;/usr/lib/python2.7/site-packages/pyglet/graphics/__init__.py;0;4
+FILE_NAME_13=1531;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/GL/StateManagement.py;0;4
+FILE_NAME_14=3669;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/Themes.py;0;4
+FILE_NAME_15=2324;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/test_CSSProperties.py;0;4
+FILE_NAME_16=1109;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/CSSProperties.py;0;4
+FILE_NAME_17=128;None;0;16;0;1;1;/home/horazont/Projects/parser/fpcdoc/Syntax;0;4
+FILE_NAME_18=243;None;0;16;0;1;1;/home/horazont/Projects/fpga/kcpasm/Syntax.pyLRp;0;4
+FILE_NAME_19=45078;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/utils/pyLR1/pyLRp.py;0;4
+FILE_NAME_20=0;None;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/utils/pyLR1/Test.pyLRp;0;4
+FILE_NAME_21=743;None;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/utils/pyLR1/pyLRp.pyLRp;0;4
+FILE_NAME_22=0;Python;0;16;0;1;1;/home/horazont/Projects/parser/fpcdoc/test.py;0;4
+FILE_NAME_23=1216;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/utils/CSSParser/Syntax.pyLRp;0;4
+FILE_NAME_24=194;CSS;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/utils/CSSParser/test.css;0;4
+FILE_NAME_25=2585;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Engine/UI/StylesheetMinilanguage/Language.py;0;4
 
 [VTE]
 last_dir=/var/www/dataroot/horazont/priyomdb
