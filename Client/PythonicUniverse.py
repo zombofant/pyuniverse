@@ -45,14 +45,15 @@ class Scene(SceneWidget):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
         self.rotZ = 0.
-        self._testModel = ResourceManager().require('/data/models/cone.obj', RenderModel)
+        self._testModel = ResourceManager().require('/data/models/die.obj', RenderModel)
     
     def renderScene(self):
         self._setupProjection()
+        glEnable(GL_CULL_FACE)
         glTranslatef(0.0, 0.0, -5.0)
         glRotatef(self.rotX, 1.0, 0.0, 0.0)
         glRotatef(self.rotZ, 0.0, 0.0, 1.0)
-        glColor4f(0.2, 0.5, 0.2, 1.0)
+        glColor4f(1.0, 1.0, 1.0, 1.0)
         self._testModel.draw()
         glLoadIdentity()
         self._resetProjection()
