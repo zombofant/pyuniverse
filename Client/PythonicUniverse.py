@@ -46,7 +46,7 @@ class Scene(SceneWidget):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
         self.rotZ = 0.
-        self._testModel = ResourceManager().require('/data/models/die.obj', RenderModel)
+        self._testModel = ResourceManager().require('die.obj', RenderModel)
     
     def renderScene(self):
         self._setupProjection()
