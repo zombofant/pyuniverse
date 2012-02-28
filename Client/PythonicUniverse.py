@@ -37,6 +37,7 @@ from Engine.UI import SceneWidget
 from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
 from Engine.VFS.Mounts import MountDirectory
 from Engine.Resources.Manager import ResourceManager
+from Engine.Resources.TextureLoader import TextureLoader
 from Engine.Resources.ModelLoader import OBJModelLoader
 from Engine.GL.RenderModel import RenderModel
 
@@ -45,11 +46,12 @@ class Scene(SceneWidget):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
         self.rotZ = 0.
-        self._testModel = ResourceManager().require('/data/models/die.obj', RenderModel)
+        self._testModel = ResourceManager().require('die.obj', RenderModel)
     
     def renderScene(self):
         self._setupProjection()
         glEnable(GL_CULL_FACE)
+        glEnable(GL_TEXTURE_2D)
         glTranslatef(0.0, 0.0, -5.0)
         glRotatef(self.rotX, 1.0, 0.0, 0.0)
         glRotatef(self.rotZ, 0.0, 0.0, 1.0)
