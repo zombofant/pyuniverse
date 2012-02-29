@@ -25,6 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import StringIO
 from OpenGL.GL import *
 import math
 import pyglet
@@ -40,6 +41,8 @@ from Engine.Resources.Manager import ResourceManager
 from Engine.Resources.TextureLoader import TextureLoader
 from Engine.Resources.ModelLoader import OBJModelLoader
 from Engine.GL.RenderModel import RenderModel
+from Engine.UI.Theme import Theme
+from Engine.UI.CSS.Parser import Parser
 
 class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
@@ -60,6 +63,7 @@ class Scene(SceneWidget):
         self._testModel.draw()
         glLoadIdentity()
         self._resetProjection()
+        glDisable(GL_CULL_FACE)
 
     def update(self, timeDelta):
         self.rotX += timeDelta * 30.0
@@ -76,6 +80,15 @@ class PythonicUniverse(Application):
             vfs.mount('/data', MountDirectory(os.path.join(os.getcwd(), "data")), MountPriority.FileSystem)
 
         ResourceManager(vfs)
+
+        self.theme = Theme()
+        self.theme.addRules(Parser().parse(StringIO.StringIO("""
+ScreenWidget {
+    background-color: rgba(1.0, 0.0, 1.0, 0.2);
+    border: 10 solid rgba(1.0, 1.0, 1.0, 0.2);
+}
+""")))
+        self.theme.applyStyles(self)
 
         scene = Scene(self.windows[0][1])
         self.addSceneWidget(scene)
