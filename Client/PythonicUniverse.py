@@ -38,11 +38,11 @@ from Engine.UI import SceneWidget
 from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
 from Engine.VFS.Mounts import MountDirectory
 from Engine.Resources.Manager import ResourceManager
-from Engine.Resources.TextureLoader import TextureLoader
-from Engine.Resources.ModelLoader import OBJModelLoader
+import Engine.Resources.TextureLoader
+import Engine.Resources.ModelLoader
+import Engine.Resources.CSSLoader
 from Engine.GL.RenderModel import RenderModel
 from Engine.UI.Theme import Theme
-from Engine.UI.CSS.Parser import Parser
 
 class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
@@ -82,15 +82,7 @@ class PythonicUniverse(Application):
         ResourceManager(vfs)
 
         self.theme = Theme()
-        self.theme.addRules(Parser().parse(StringIO.StringIO("""
-ScreenWidget {
-    border-left: 100 solid rgba(1.0, 0.0, 0.0, 1.0);
-    border-right: 100 solid rgba(0.0, 1.0, 0.0, 1.0);
-    border-bottom: 100 solid rgba(0.0, 0.0, 1.0, 1.0);
-    border-bottom-left: rgba(1.0, 0.0, 1.0, 1.0);
-    border-bottom-right: rgba(0.0, 1.0, 1.0, 1.0);
-}
-""")))
+        self.theme.addRules(ResourceManager().require("ui.css"))
         self.theme.applyStyles(self)
 
         scene = Scene(self.windows[0][1])
