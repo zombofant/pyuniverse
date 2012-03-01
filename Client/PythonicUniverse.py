@@ -85,7 +85,7 @@ class PythonicUniverse(Application):
         self.theme = Theme()
         self.theme.addRules(ResourceManager().require("ui.css"))
 
-        mainScreen = self.windows[0][1]
+        mainScreen = self._primaryWidget
 
         scene = Scene(mainScreen)
         self.addSceneWidget(scene)
