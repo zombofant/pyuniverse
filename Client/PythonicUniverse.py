@@ -91,8 +91,10 @@ class PythonicUniverse(Application):
 
         vbox = VBox(mainScreen)
         hbox1 = HBox(vbox)
+        hbox1.StyleClasses.add("test")
         hbox2 = HBox(vbox)
         vbox21 = VBox(hbox2)
+        vbox21.StyleClasses.add("test")
         vbox22 = VBox(hbox2)
         
         self.theme.applyStyles(self)
