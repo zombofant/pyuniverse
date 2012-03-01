@@ -84,8 +84,11 @@ class PythonicUniverse(Application):
         self.theme = Theme()
         self.theme.addRules(Parser().parse(StringIO.StringIO("""
 ScreenWidget {
-    background-color: rgba(1.0, 0.0, 1.0, 0.2);
-    border: 10 solid rgba(1.0, 1.0, 1.0, 0.2);
+    border-left: 100 solid rgba(1.0, 0.0, 0.0, 1.0);
+    border-right: 100 solid rgba(0.0, 1.0, 0.0, 1.0);
+    border-bottom: 100 solid rgba(0.0, 0.0, 1.0, 1.0);
+    border-bottom-left: rgba(1.0, 0.0, 1.0, 1.0);
+    border-bottom-right: rgba(0.0, 1.0, 1.0, 1.0);
 }
 """)))
         self.theme.applyStyles(self)
