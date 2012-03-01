@@ -41,6 +41,7 @@ from Engine.Resources.Manager import ResourceManager
 import Engine.Resources.TextureLoader
 import Engine.Resources.ModelLoader
 import Engine.Resources.CSSLoader
+import Engine.Resources.MaterialLoader
 from Engine.GL.RenderModel import RenderModel
 from Engine.UI.Theme import Theme
 
