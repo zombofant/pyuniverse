@@ -48,8 +48,8 @@ class Scene(SceneWidget):
         self.rotX = 0.
         self.rotZ = 0.
         self._sceneGraph = SceneGraph()
-        self._sceneGraph.rootNode.addChild(
-            ResourceManager().require('die.obj', RenderModel))
+        self._testModel = ResourceManager().require('die.obj', RenderModel)
+        self._sceneGraph.rootNode.addChild(self._testModel)
     
     def renderScene(self):
         self._setupProjection()
@@ -61,7 +61,10 @@ class Scene(SceneWidget):
         #glColor4f(1.0, 1.0, 1.0, 1.0)
         #glScalef(0.35,0.35,0.35)
         #self._testModel.draw()
-        self._sceneGraph.render(0)
+        self._testModel.translate(0,0,-5)
+        #self._testModel.rotate(self.rotX, 1., 0., 0.)
+        #self._testModel.rotate(self.rotZ, 0., 0., 1.)
+        self._sceneGraph.renderScene()
         glLoadIdentity()
         self._resetProjection()
 
