@@ -34,7 +34,7 @@ import os
 import sys
 
 from Engine.Application import Window, Application
-from Engine.UI import SceneWidget
+from Engine.UI import SceneWidget, VBox, HBox
 from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
 from Engine.VFS.Mounts import MountDirectory
 from Engine.Resources.Manager import ResourceManager
@@ -83,10 +83,20 @@ class PythonicUniverse(Application):
 
         self.theme = Theme()
         self.theme.addRules(ResourceManager().require("ui.css"))
-        self.theme.applyStyles(self)
 
-        scene = Scene(self.windows[0][1])
+        mainScreen = self.windows[0][1]
+
+        scene = Scene(mainScreen)
         self.addSceneWidget(scene)
+
+        vbox = VBox(mainScreen)
+        hbox1 = HBox(vbox)
+        hbox2 = HBox(vbox)
+        vbox21 = VBox(hbox2)
+        vbox22 = VBox(hbox2)
+        
+        self.theme.applyStyles(self)
+        
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.ESCAPE:
