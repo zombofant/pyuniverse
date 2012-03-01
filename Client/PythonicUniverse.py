@@ -40,24 +40,28 @@ from Engine.Resources.Manager import ResourceManager
 from Engine.Resources.TextureLoader import TextureLoader
 from Engine.Resources.ModelLoader import OBJModelLoader
 from Engine.GL.RenderModel import RenderModel
+from Engine.GL.SceneGraph.Core import SceneGraph
 
 class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
         self.rotZ = 0.
-        self._testModel = ResourceManager().require('die.obj', RenderModel)
+        self._sceneGraph = SceneGraph()
+        self._sceneGraph.rootNode.addChild(
+            ResourceManager().require('die.obj', RenderModel))
     
     def renderScene(self):
         self._setupProjection()
         glEnable(GL_CULL_FACE)
         glEnable(GL_TEXTURE_2D)
-        glTranslatef(0.0, 0.0, -5.0)
-        glRotatef(self.rotX, 1.0, 0.0, 0.0)
-        glRotatef(self.rotZ, 0.0, 0.0, 1.0)
-        glColor4f(1.0, 1.0, 1.0, 1.0)
-        glScalef(0.35,0.35,0.35)
-        self._testModel.draw()
+        #glTranslatef(0.0, 0.0, -5.0)
+        #glRotatef(self.rotX, 1.0, 0.0, 0.0)
+        #glRotatef(self.rotZ, 0.0, 0.0, 1.0)
+        #glColor4f(1.0, 1.0, 1.0, 1.0)
+        #glScalef(0.35,0.35,0.35)
+        #self._testModel.draw()
+        self._sceneGraph.render(0)
         glLoadIdentity()
         self._resetProjection()
 
