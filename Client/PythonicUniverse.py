@@ -25,6 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import StringIO
 from OpenGL.GL import *
 import math
 import pyglet
@@ -33,14 +34,16 @@ import os
 import sys
 
 from Engine.Application import Window, Application
-from Engine.UI import SceneWidget
+from Engine.UI import SceneWidget, VBox, HBox
 from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
 from Engine.VFS.Mounts import MountDirectory
 from Engine.Resources.Manager import ResourceManager
-from Engine.Resources.TextureLoader import TextureLoader
-from Engine.Resources.ModelLoader import OBJModelLoader
+import Engine.Resources.TextureLoader
+import Engine.Resources.ModelLoader
+import Engine.Resources.CSSLoader
 from Engine.GL.RenderModel import RenderModel
 from Engine.GL.SceneGraph.Core import SceneGraph, Node
+from Engine.UI.Theme import Theme
 
 class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
@@ -49,29 +52,28 @@ class Scene(SceneWidget):
         self.rotZ = 0.
         self._sceneGraph = SceneGraph()
         self._testModel = ResourceManager().require('die.obj', RenderModel)
-        self._nodes = []
+        self._node = Node() #rotationsnode 
+        self._sceneGraph.rootNode.addChild(self._node)
         for j in range(0,25):
-            node = Node()
-            node.addChild(self._testModel)
-            self._nodes.append(node)
-            self._sceneGraph.rootNode.addChild(node)
-    
+            transNode = Node()
+            transNode.addChild(self._testModel)
+            transNode.LocalTransformation.translate([1.1*(j%5)-2.5,1.1*(j//5)-2.2,-5])
+            transNode.LocalTransformation.scale([0.3,0.3,0.3])
+            self._node.addChild(transNode)
+ 
     def renderScene(self):
         self._setupProjection()
         glEnable(GL_CULL_FACE)
         glEnable(GL_TEXTURE_2D)
-        #self._testNode1.LocalTransformation.scale(0.25, 0.25, 0.25)
-        a = 1.1
-        for j in range(0,25):
-            self._nodes[j].LocalTransformation.translate(a*(j%5)-2.5, a*(j//5)-2.2,-5)
-            self._nodes[j].LocalTransformation.rotate(self.rotX+j*j, 1., 0., 0.)
-            self._nodes[j].LocalTransformation.rotate(self.rotZ-j*j, 0., 0., 1.)
-            self._nodes[j].LocalTransformation.scale(0.3,0.3,0.3)
+        glPushMatrix()
+        self._node.LocalTransformation.rotate(self.rotX, [1., 0.,0.])
+        self._node.LocalTransformation.rotate(self.rotZ, [0., 0.,1.])
         self._sceneGraph.update(0)
         self._sceneGraph.renderScene()
-        for j in range(0,25):
-            self._nodes[j].LocalTransformation.reset()
+        self._node.LocalTransformation.reset()
         self._resetProjection()
+        glPopMatrix()
+        glDisable(GL_CULL_FACE)
 
     def update(self, timeDelta):
         self.rotX += timeDelta * 22.
@@ -89,8 +91,24 @@ class PythonicUniverse(Application):
 
         ResourceManager(vfs)
 
-        scene = Scene(self.windows[0][1])
+        self.theme = Theme()
+        self.theme.addRules(ResourceManager().require("ui.css"))
+
+        mainScreen = self.windows[0][1]
+
+        scene = Scene(mainScreen)
         self.addSceneWidget(scene)
+
+        vbox = VBox(mainScreen)
+        hbox1 = HBox(vbox)
+        hbox1.StyleClasses.add("test")
+        hbox2 = HBox(vbox)
+        vbox21 = VBox(hbox2)
+        vbox21.StyleClasses.add("test")
+        vbox22 = VBox(hbox2)
+        
+        self.theme.applyStyles(self)
+        
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.ESCAPE:
