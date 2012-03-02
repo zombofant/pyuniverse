@@ -78,7 +78,7 @@ class Scene(SceneWidget):
 
 class PythonicUniverse(Application):
     def __init__(self, mountCWDData=True, **kwargs):
-        super(PythonicUniverse, self).__init__(**kwargs)
+        super(PythonicUniverse, self).__init__(fullscreen=True, **kwargs)
         vfs = XDGFileSystem('pyuniverse')
         if mountCWDData:
             vfs.mount('/data', MountDirectory(os.path.join(os.getcwd(), "data")), MountPriority.FileSystem)
@@ -89,9 +89,6 @@ class PythonicUniverse(Application):
         self.theme.addRules(ResourceManager().require("ui.css"))
 
         mainScreen = self.windows[0][1]
-
-        # scene = Scene(mainScreen)
-        # self.addSceneWidget(scene)
 
         vbox = VBox(mainScreen)
         hbox1 = HBox(vbox)
@@ -105,6 +102,9 @@ class PythonicUniverse(Application):
         label.Text = "Hello World!"
         label.AbsoluteRect.X = 100
         label.AbsoluteRect.Y = 100
+
+        scene = Scene(mainScreen)
+        self.addSceneWidget(scene)
         
         self.theme.applyStyles(self)
 
@@ -125,15 +125,25 @@ class PythonicUniverse(Application):
             },
         ])
         shader = self._shader.bind(texturing=True, upsideDown=False)
+        self._shaders = [shader]
         shader.bind()
         glUniform1i(shader["texture"], 0)
         
         shader = self._shader.bind(texturing=True, upsideDown=True)
+        self._shaders.append(shader)
         shader.bind()
         glUniform1i(shader["texture"], 0)
         glUniform2fv(shader["upsideDownHelper"], 1, self._upsideDownHelper)
 
+        self._shaders.append(self._shader.bind(texturing=False, upsideDown=False))
+
         Shader.unbind()
+
+    def _setUIOffset(self, x, y):
+        xy = np.asarray([x, y], dtype=np.float32)
+        for shader in self._shaders:
+            shader.bind()
+            glUniform2fv(shader["uiOffset"], 1, xy)
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.ESCAPE:
