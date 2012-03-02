@@ -35,7 +35,7 @@ import sys
 import numpy as np
 
 from Engine.Application import Window, Application
-from Engine.UI import SceneWidget, VBox, HBox
+from Engine.UI import SceneWidget, VBox, HBox, LabelWidget
 from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
 from Engine.VFS.Mounts import MountDirectory
 from Engine.Resources.Manager import ResourceManager
@@ -90,8 +90,8 @@ class PythonicUniverse(Application):
 
         mainScreen = self.windows[0][1]
 
-        scene = Scene(mainScreen)
-        self.addSceneWidget(scene)
+        # scene = Scene(mainScreen)
+        # self.addSceneWidget(scene)
 
         vbox = VBox(mainScreen)
         hbox1 = HBox(vbox)
@@ -100,6 +100,11 @@ class PythonicUniverse(Application):
         vbox21 = VBox(hbox2)
         vbox21.StyleClasses.add("test")
         vbox22 = VBox(hbox2)
+
+        label = LabelWidget(vbox21)
+        label.Text = "Hello World!"
+        label.AbsoluteRect.X = 100
+        label.AbsoluteRect.Y = 100
         
         self.theme.applyStyles(self)
 
