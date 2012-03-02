@@ -103,16 +103,31 @@ class PythonicUniverse(Application):
         
         self.theme.applyStyles(self)
 
-        self._uiShader = ResourceManager().require("/data/shaders/ui.shader", uniforms={
-            "upsideDownHelper": glUniform2fv
-        })
-        self._upsideDownHelper = [
-            np.asarray([1.0, 0.0], dtype=np.float32),
-            np.asarray([-1.0, self.AbsoluteRect.Height], dtype=np.float32)
-        ]
-        self._uiShader.bind()
-        glUniform2fv(self._uiShader["upsideDownHelper"], 1, self._upsideDownHelper[1])
-        # self._uiShader["upsideDownHelper"] = self._upsideDownHelper[1]
+        self._shader = ResourceManager().require("/data/shaders/ui.shader")
+        self._upsideDownHelper = np.asarray([-1.0, self.AbsoluteRect.Height], dtype=np.float32)
+        self._shader.cacheShaders([
+            {
+                "texturing": True,
+                "upsideDown": True
+            },
+            {
+                "texturing": True,
+                "upsideDown": False
+            },
+            {
+                "texturing": False,
+                "upsideDown": False
+            },
+        ])
+        shader = self._shader.bind(texturing=True, upsideDown=False)
+        shader.bind()
+        glUniform1i(shader["texture"], 0)
+        
+        shader = self._shader.bind(texturing=True, upsideDown=True)
+        shader.bind()
+        glUniform1i(shader["texture"], 0)
+        glUniform2fv(shader["upsideDownHelper"], 1, self._upsideDownHelper)
+
         Shader.unbind()
 
     def onKeyDown(self, symbol, modifiers):
@@ -121,18 +136,5 @@ class PythonicUniverse(Application):
             pyglet.app.exit()
 
     def render(self):
-        self._uiShader.bind()
         super(PythonicUniverse, self).render()
         Shader.unbind()
-
-    @property
-    def UpsideDownMode(self):
-        return self._upsideDownMode
-
-    @UpsideDownMode.setter
-    def UpsideDownMode(self, enabled):
-        enabled = bool(enabled)
-        if enabled:
-            self._uiShader["upsideDownHelper"] = self._upsideDownHelper[1]
-        else:
-            self._uiShader["upsideDownHelper"] = self._upsideDownHelper[0]
