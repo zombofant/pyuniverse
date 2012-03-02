@@ -32,6 +32,7 @@ import pyglet
 import pyglet.window.key as key
 import os
 import sys
+import numpy as np
 
 from Engine.Application import Window, Application
 from Engine.UI import SceneWidget, VBox, HBox
@@ -42,6 +43,8 @@ import Engine.Resources.TextureLoader
 import Engine.Resources.ModelLoader
 import Engine.Resources.CSSLoader
 import Engine.Resources.MaterialLoader
+import Engine.Resources.ShaderLoader
+from Engine.GL.Shader import Shader
 from Engine.GL.RenderModel import RenderModel
 from Engine.UI.Theme import Theme
 
@@ -99,10 +102,37 @@ class PythonicUniverse(Application):
         vbox22 = VBox(hbox2)
         
         self.theme.applyStyles(self)
-        
+
+        self._uiShader = ResourceManager().require("/data/shaders/ui.shader", uniforms={
+            "upsideDownHelper": glUniform2fv
+        })
+        self._upsideDownHelper = [
+            np.asarray([1.0, 0.0], dtype=np.float32),
+            np.asarray([-1.0, self.AbsoluteRect.Height], dtype=np.float32)
+        ]
+        self._uiShader.bind()
+        glUniform2fv(self._uiShader["upsideDownHelper"], 1, self._upsideDownHelper[1])
+        # self._uiShader["upsideDownHelper"] = self._upsideDownHelper[1]
+        Shader.unbind()
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.ESCAPE:
             # FIXME: make this without an pyglet.app reference
             pyglet.app.exit()
 
+    def render(self):
+        self._uiShader.bind()
+        super(PythonicUniverse, self).render()
+        Shader.unbind()
+
+    @property
+    def UpsideDownMode(self):
+        return self._upsideDownMode
+
+    @UpsideDownMode.setter
+    def UpsideDownMode(self, enabled):
+        enabled = bool(enabled)
+        if enabled:
+            self._uiShader["upsideDownHelper"] = self._upsideDownHelper[1]
+        else:
+            self._uiShader["upsideDownHelper"] = self._upsideDownHelper[0]
