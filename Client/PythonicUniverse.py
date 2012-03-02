@@ -35,7 +35,7 @@ import sys
 import numpy as np
 
 from Engine.Application import Window, Application
-from Engine.UI import SceneWidget, VBox, HBox, LabelWidget
+from Engine.UI import SceneWidget, VBox, HBox, LabelWidget, WindowWidget
 from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
 from Engine.VFS.Mounts import MountDirectory
 from Engine.Resources.Manager import ResourceManager
@@ -89,22 +89,11 @@ class PythonicUniverse(Application):
         self.theme.addRules(ResourceManager().require("ui.css"))
 
         mainScreen = self._primaryWidget
-
-        vbox = VBox(mainScreen)
-        hbox1 = HBox(vbox)
-        hbox1.StyleClasses.add("test")
-        hbox2 = HBox(vbox)
-        vbox21 = VBox(hbox2)
-        vbox21.StyleClasses.add("test")
-        vbox22 = VBox(hbox2)
-
-        label = LabelWidget(vbox21)
-        label.Text = "Hello World!"
-        label.AbsoluteRect.X = 100
-        label.AbsoluteRect.Y = 100
-
         scene = Scene(mainScreen)
         self.addSceneWidget(scene)
+
+        window = WindowWidget(self._windowLayer)
+        window.Title.Text = "Test"
         
         self.theme.applyStyles(self)
 
