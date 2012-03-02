@@ -40,7 +40,7 @@ from Engine.Resources.Manager import ResourceManager
 from Engine.Resources.TextureLoader import TextureLoader
 from Engine.Resources.ModelLoader import OBJModelLoader
 from Engine.GL.RenderModel import RenderModel
-from Engine.GL.SceneGraph.Core import SceneGraph
+from Engine.GL.SceneGraph.Core import SceneGraph, Node
 
 class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
@@ -49,29 +49,34 @@ class Scene(SceneWidget):
         self.rotZ = 0.
         self._sceneGraph = SceneGraph()
         self._testModel = ResourceManager().require('die.obj', RenderModel)
-        self._sceneGraph.rootNode.addChild(self._testModel)
+        self._nodes = []
+        for j in range(0,25):
+            node = Node()
+            node.addChild(self._testModel)
+            self._nodes.append(node)
+            self._sceneGraph.rootNode.addChild(node)
     
     def renderScene(self):
         self._setupProjection()
         glEnable(GL_CULL_FACE)
         glEnable(GL_TEXTURE_2D)
-        #glTranslatef(0.0, 0.0, -5.0)
-        #glRotatef(self.rotX, 1.0, 0.0, 0.0)
-        #glRotatef(self.rotZ, 0.0, 0.0, 1.0)
-        #glColor4f(1.0, 1.0, 1.0, 1.0)
-        #glScalef(0.35,0.35,0.35)
-        #self._testModel.draw()
-        self._testModel.translate(0,0,-5)
-        #self._testModel.rotate(self.rotX, 1., 0., 0.)
-        #self._testModel.rotate(self.rotZ, 0., 0., 1.)
+        #self._testNode1.LocalTransformation.scale(0.25, 0.25, 0.25)
+        a = 1.1
+        for j in range(0,25):
+            self._nodes[j].LocalTransformation.translate(a*(j%5)-2.5, a*(j//5)-2.2,-5)
+            self._nodes[j].LocalTransformation.rotate(self.rotX+j*j, 1., 0., 0.)
+            self._nodes[j].LocalTransformation.rotate(self.rotZ-j*j, 0., 0., 1.)
+            self._nodes[j].LocalTransformation.scale(0.3,0.3,0.3)
+        self._sceneGraph.update(0)
         self._sceneGraph.renderScene()
-        glLoadIdentity()
+        for j in range(0,25):
+            self._nodes[j].LocalTransformation.reset()
         self._resetProjection()
 
     def update(self, timeDelta):
-        self.rotX += timeDelta * 30.0
-        self.rotZ += timeDelta * 45.0
-        self.rotX -= (self.rotX // 360) * 360
+        self.rotX += timeDelta * 22.
+        self.rotZ += timeDelta * 70.
+        self.rotX -= (self.rotX // 360 ) * 360
         self.rotZ -= (self.rotZ // 360) * 360
         # print(timeDelta)
 
