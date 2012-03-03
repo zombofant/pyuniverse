@@ -25,9 +25,11 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GL.framebufferobjects import *
+#from OpenGL.GL import *
+#from OpenGL.GLU import *
+#from OpenGL.GL.framebufferobjects import *
+from pyglet.gl import *
+from pyglet.gl.glu import *
 
 class Object(object):
     def __init__(self, **kwargs):

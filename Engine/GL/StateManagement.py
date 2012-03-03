@@ -27,7 +27,7 @@ from our_future import *
 
 from Base import BindableObject
 from pyglet.graphics import Group, OrderedGroup
-from OpenGL.GL import glActiveTexture
+from pyglet.gl import glActiveTexture
 
 class StateContext(object):
     def __init__(self, stateObj, **kwargs):

@@ -36,7 +36,8 @@ class TextureBase(BindableObject):
         assert format is not None
         super(TextureBase, self).__init__(**kwargs)
         self.format = format
-        self.id = glGenTextures(1)
+        self.id = 0
+        glGenTextures(1, self.id)
 
     def _getDataFormatType(self, dataTuple):
         return dataTuple if dataTuple is not None else (GL_LUMINANCE, GL_UNSIGNED_BYTE, None)

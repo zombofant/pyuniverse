@@ -26,7 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import StringIO
-from OpenGL.GL import *
+from pyglet.gl import *
 import math
 import pyglet
 import pyglet.window.key as key
@@ -69,20 +69,20 @@ class Scene(SceneWidget):
  
     def renderScene(self):
         if self._frameT >= 5:
-            print('%i Frames/s' % (self._frameN // 5))
+            print('{0:.2f} Frames/s'.format(self._frameN / self._frameT))
             self._frameN = 0
-            self._frameT = 0
+            self._frameT -= 5
         self._setupProjection()
         glEnable(GL_CULL_FACE)
         glEnable(GL_TEXTURE_2D)
-        glPushMatrix()
-        self._node.LocalTransformation.rotate(self.rotX, [1., 0.,0.])
-        self._node.LocalTransformation.rotate(self.rotZ, [0., 0.,1.])
-        self._sceneGraph.update(0)
+        #glPushMatrix()
+        #self._node.LocalTransformation.rotate(self.rotX, [1., 0.,0.])
+        #self._node.LocalTransformation.rotate(self.rotZ, [0., 0.,1.])
+        #self._sceneGraph.update(0)
         self._sceneGraph.renderScene()
-        self._node.LocalTransformation.reset()
+        #self._node.LocalTransformation.reset()
         self._resetProjection()
-        glPopMatrix()
+        #glPopMatrix()
         glDisable(GL_CULL_FACE)
         self._frameN += 1
 
@@ -116,7 +116,7 @@ class PythonicUniverse(Application):
         self.theme.applyStyles(self)
 
         self._shader = ResourceManager().require("/data/shaders/ui.shader")
-        self._upsideDownHelper = np.asarray([-1.0, self.AbsoluteRect.Height], dtype=np.float32)
+        self._upsideDownHelper = np.array([-1.0, self.AbsoluteRect.Height], dtype=np.float32)
         self._shader.cacheShaders([
             {
                 "texturing": True,

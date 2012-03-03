@@ -31,7 +31,7 @@ from Manager import ResourceManager
 try:
     from pyglet import image
     from Engine.GL.Texture import Texture2D
-    from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE
+    from pyglet.gl import GL_RGBA, GL_UNSIGNED_BYTE
 except ImportError:
     pass
 

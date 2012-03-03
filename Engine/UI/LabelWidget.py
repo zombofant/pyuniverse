@@ -30,7 +30,8 @@ __all__ = ["LabelWidget"]
 try:
     import pyglet.font
     import pyglet.text
-    from OpenGL.GL import *
+    # from OpenGL.GL import *
+    from pyglet.gl import *
     import Engine.GL.Shader as Shader
 except NameError:
     pass

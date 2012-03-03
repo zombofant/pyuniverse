@@ -25,9 +25,10 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 import sys
-import OpenGL.GL as GL
+# import OpenGL.GL as GL
+import pyglet.gl as GL
 import numpy as np
-import scipy as sp
+# sp.import scipy as sp
 
 """
 The core classes of the SceneGraph management system.
@@ -78,8 +79,8 @@ class Transformation(object):
         self.reset()
 
     def updateMatrix(self):
-        self._matrix = self._mTranslate*self._mRotate*self._mScale
-        self._transposedMatrix = self._matrix.T.copy(order='C')
+        self._matrix = np.dot(self._mTranslate, np.dot(self._mRotate,self._mScale))
+        self._transposedMatrix = np.array(self._matrix.T.copy())
 
     def reset(self):
         self.setIdentity()
@@ -113,15 +114,15 @@ class Transformation(object):
         self._isIdentity = False
 
     def scale(self, scaleVectorL):
-        self._mScale = self._mScale * np.matrix([[scaleVectorL[0],0.,0.,0.],
+        self._mScale = np.dot(self._mScale, np.array([[scaleVectorL[0],0.,0.,0.],
             [0.,scaleVectorL[1],0.,0.],[0.,0.,scaleVectorL[2],0.],[0.,0.,0.,1.]],
-            dtype=np.float32)
+            dtype=np.float32))
         self._isIdentity = False
 
     def translate(self, vectorL):
-        self._mTranslate = self._mTranslate * np.matrix([[1.,0.,0.,vectorL[0]],
+        self._mTranslate = np.dot(self._mTranslate, np.array([[1.,0.,0.,vectorL[0]],
             [0.,1.,0.,vectorL[1]], [0.,0.,1.,vectorL[2]], [0.,0.,0.,1.]],
-            dtype=np.float32)
+            dtype=np.float32))
         self._isIdentity = False
 
     def rotate(self, angle, vectorL, degrees=True):
@@ -137,11 +138,11 @@ class Transformation(object):
         c = np.cos(angle)
         s = np.sin(angle)
         o = 1. - c
-        self._mRotate = self._mRotate * np.matrix([
+        self._mRotate = np.dot(self._mRotate, np.array([
             [c+axisX*axisX*o, axisX*axisY*o-axisZ*s, axisX*axisZ*o+axisY*s, 0.],
             [axisY*axisX*o+axisZ*s, c+axisY*axisY*o, axisY*axisZ*o-axisX*s, 0.],
             [axisZ*axisX*o-axisY*s, axisZ*axisY*o+axisX*s, c+axisZ*axisZ*o, 0.],
-            [0., 0., 0., 1.]], dtype=np.float32)
+            [0., 0., 0., 1.]], dtype=np.float32))
         self._isIdentity = False
 
     @property

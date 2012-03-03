@@ -27,9 +27,10 @@ from our_future import *
 import pyglet
 import time
 from UI import Rect, RootWidget, ScreenWidget, SceneWidget
-from OpenGL.GL import *
-from OpenGL.GL.framebufferobjects import *
-from GL import Framebuffer, Texture2D, Renderbuffer, makePOT
+#from OpenGL.GL import *
+#from OpenGL.GL.framebufferobjects import *
+from pyglet.gl import *
+# from GL import Framebuffer, Texture2D, Renderbuffer, makePOT
 
 __docformat__ = "restructuredtext"
 

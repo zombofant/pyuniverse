@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/pypy
 # encoding=utf8
 # File name: py-universe.py
 # This file is part of: pyuni
@@ -32,10 +32,39 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 # global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+# import OpenGL
+# OpenGL.ERROR_ON_COPY = True
 
-if __name__ == '__main__':
+import numpypy
+import argparse
+
+def main(args):
     from Client.PythonicUniverse import PythonicUniverse
     app = PythonicUniverse()
-    app.run()
+    if args.profile:
+        app.TimeLimit = args.timeLimit or 60.0
+        print("Will run {0} seconds under cProfile".format(app.TimeLimit))
+        import cProfile
+        cProfile.runctx("app.run()", globals(), {"app": app}, args.profile)
+    else:
+        app.run()
+
+if __name__ == '__main__':
+    import sys
+    sys.setcheckinterval(1000)
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("--profile", "-p",
+        metavar="FILENAME",
+        help="Run the application under control of the cProfile and store the results in FILENAME.",
+        dest="profile",
+        default=None)
+    argparser.add_argument("--time-limit", "-t",
+        metavar="SECONDS",
+        help="Limits the time the application will run to SECONDS. Has only effect if profiling is enabled.",
+        type=float,
+        dest="timeLimit",
+        default=None)
+
+    args = argparser.parse_args()
+    main(args)
+    

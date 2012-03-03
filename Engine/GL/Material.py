@@ -29,7 +29,7 @@ import sys
 from StateManagement import StateObjectGroup, ActiveTexture
 from Texture import Texture2D
 from Engine.Resources.Manager import ResourceManager
-from OpenGL.GL import GL_TEXTURE0
+from pyglet.gl import GL_TEXTURE0
 
 class Material(object):
     """

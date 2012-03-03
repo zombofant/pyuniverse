@@ -25,7 +25,7 @@
 from Shader import Shader
 from Renderbuffer import Renderbuffer
 from Texture import Texture1D, Texture2D
-from Framebuffer import Framebuffer
+# from Framebuffer import Framebuffer
 
 def makePOT(v):
     # From http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2

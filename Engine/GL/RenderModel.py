@@ -26,7 +26,8 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Engine.Model import Model
-from OpenGL.GL import *
+# from OpenGL.GL import *
+from pyglet.gl import *
 from Engine.Resources.Manager import ResourceManager
 from SceneGraph.Core import Spatial
 

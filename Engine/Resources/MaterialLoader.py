@@ -28,11 +28,11 @@ from our_future import *
 from Base import ResourceLoader
 from Manager import ResourceManager
 
-try:
-    from Engine.GL.RenderModel import RenderModel
-    from Engine.GL.Material import Material
-except ImportError:
-    pass
+#try:
+from Engine.GL.RenderModel import RenderModel
+from Engine.GL.Material import Material
+#except ImportError:
+#    pass
 
 class MaterialLoader(ResourceLoader):
     """

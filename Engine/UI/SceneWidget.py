@@ -28,8 +28,10 @@ from our_future import *
 __all__ = ["SceneWidget"]
 
 from WidgetBase import Widget
-from OpenGL.GL import *
-from OpenGL.GLU import *
+# from OpenGL.GL import *
+# from OpenGL.GLU import *
+from pyglet.gl import *
+from pyglet.gl.glu import *
 
 class SceneWidget(Widget):
     def __init__(self, parent, **kwargs):
