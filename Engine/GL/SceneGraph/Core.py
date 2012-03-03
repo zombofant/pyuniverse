@@ -28,6 +28,7 @@ import sys
 # import OpenGL.GL as GL
 import pyglet.gl as GL
 import numpy as np
+import ctypes as c
 # sp.import scipy as sp
 
 """
@@ -109,8 +110,8 @@ class Transformation(object):
                 self._matrix = transA.Matrix
                 self._transpedMatrix = transA.TransposedMatrix
         else:
-            self._matrix = transA.Matrix * transB.Matrix
-            self._transposedMatrix = transA.TransposedMatrix * transB.TransposedMatrix
+            self._matrix = np.dot(transA.Matrix, transB.Matrix)
+            self._transposedMatrix = np.dot(transA.TransposedMatrix, transB.TransposedMatrix)
         self._isIdentity = False
 
     def scale(self, scaleVectorL):
@@ -239,7 +240,9 @@ class Node(Spatial):
             child.onDraw()
 
     def draw(self):
-        GL.glLoadMatrixf(self.WorldTrans.TransposedMatrix)
+        # GL.glLoadMatrixf(self.WorldTrans.TransposedMatrix)
+        mat = self.WorldTrans.TransposedMatrix
+        GL.glLoadMatrixf(c.cast(c.c_voidp(mat.__array_interface__['data'][0]), c.POINTER(c.c_float)))
         super(Node, self).draw()
         for child in self.children:
             child.draw()

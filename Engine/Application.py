@@ -48,6 +48,9 @@ class Application(RootWidget):
         self.SyncedFrameLength = 0.01
         self.SyncedSpeedFactor = 1.
         self._aggregatedTime = 0.
+        self._totalTime = 0.
+        self._timeLimit = 10
+        self.TimeLimit = None
 
         if fullscreen:
             self._constructFullscreen()
@@ -213,7 +216,7 @@ class Application(RootWidget):
             syncedTime -= frameLength
             self.updateSynced()
         self._aggregatedTime = syncedTime
-        self.updateUnsynced(timeDelta)
+        self._updateUnsynced(timeDelta)
         super(Application, self).update(timeDelta)
         if self.updateRender is not None:
             self.updateRender()
@@ -224,6 +227,12 @@ class Application(RootWidget):
         arbitary amount of time may have passed, which is given by the
         *timeDelta* argument.
         """
+
+    def updateTimeCheck(self, timeDelta):
+        self._totalTime += timeDelta
+        if self._totalTime > self._timeLimit:
+            pyglet.app.exit()
+        self.updateUnsynced(timeDelta)
 
     def updateSynced(self):
         """
@@ -376,6 +385,20 @@ class Application(RootWidget):
 
     def _on_text_motion_select(self, win, motion):
         self.dispatchCaretMotionSelect(motion)
+
+    @property
+    def TimeLimit(self):
+        return self._timeLimit
+
+    @TimeLimit.setter
+    def TimeLimit(self, value):
+        if self._timeLimit == value:
+            return
+        self._timeLimit = value
+        if self._timeLimit:
+            self._updateUnsynced = self.updateTimeCheck
+        else:
+            self._updateUnsynced = self.updateUnsynced
 
 class Window(pyglet.window.Window):
 

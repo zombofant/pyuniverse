@@ -140,17 +140,16 @@ class PythonicUniverse(Application):
         self._shaders.append(shader)
         shader.bind()
         glUniform1i(shader["texture"], 0)
-        glUniform2fv(shader["upsideDownHelper"], 1, self._upsideDownHelper)
+        glUniform2f(shader["upsideDownHelper"], -1.0, self.AbsoluteRect.Height)
 
         self._shaders.append(self._shader.bind(texturing=False, upsideDown=False))
 
         Shader.unbind()
 
     def _setUIOffset(self, x, y):
-        xy = np.asarray([x, y], dtype=np.float32)
         for shader in self._shaders:
             shader.bind()
-            glUniform2fv(shader["uiOffset"], 1, xy)
+            glUniform2f(shader["uiOffset"], x, y)
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.ESCAPE:

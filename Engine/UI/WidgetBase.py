@@ -35,7 +35,7 @@ from Style import Style
 
 try:
     import pyglet
-    from OpenGL.GL import GL_TRIANGLES, glEnable, GL_TEXTURE_2D
+    from pyglet.gl import GL_TRIANGLES, glEnable, GL_TEXTURE_2D
     from Engine.GL.Texture import Texture2D
 except ImportError:
     pass

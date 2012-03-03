@@ -28,6 +28,7 @@ from our_future import *
 from Base import *
 from Renderbuffer import RenderbufferBase
 import numpy as np
+import ctypes as c
 
 class TextureBase(BindableObject):
     _bindCall = glBindTexture
@@ -36,14 +37,14 @@ class TextureBase(BindableObject):
         assert format is not None
         super(TextureBase, self).__init__(**kwargs)
         self.format = format
-        self.id = 0
-        glGenTextures(1, self.id)
+        self.id = c.c_uint()
+        glGenTextures(1, c.byref(self.id))
 
     def _getDataFormatType(self, dataTuple):
         return dataTuple if dataTuple is not None else (GL_LUMINANCE, GL_UNSIGNED_BYTE, None)
         
     def __del__(self):
-        glDeleteTextures(np.array((self.id,)))
+        glDeleteTextures(c.byref(self.id))
         super(TextureBase, self).__del__()
         
     def __setitem__(self, key, value):

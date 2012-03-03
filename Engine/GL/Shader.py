@@ -25,6 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import ctypes as c
 import Engine.Utils as Utils
 
 from Base import *
@@ -37,14 +38,17 @@ class Shader(BindableObject):
         
     def _compileShader(self, kind, source):
         shader = glCreateShader(kind)
-        glShaderSource(shader, source)
+        buffer = c.create_string_buffer(str(source))
+        c_text = c.cast(c.pointer(c.pointer(buffer)), c.POINTER(c.POINTER(c.c_char)))
+        glShaderSource(shader, 1, c_text, None)
         glCompileShader(shader)
-        
-        length = glGetShaderiv(shader, GL_INFO_LOG_LENGTH)
+
+        #len = int()
+        """glGetShaderiv(shader, GL_INFO_LOG_LENGTH)
         if length > 1:
             log = glGetShaderInfoLog(shader)
             glDeleteShader(shader)
-            raise ValueError("Failed to compile {0}.\nCompiler log: \n{2}\nSource: \n{1}".format(kind, Utils.lineNumbering(source), log))
+            raise ValueError("Failed to compile {0}.\nCompiler log: \n{2}\nSource: \n{1}".format(kind, Utils.lineNumbering(source), log))"""
         return shader
             
     def _loadUniform(self, name):
