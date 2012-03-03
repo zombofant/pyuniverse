@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: test_CSSLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +22,31 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+import unittest
 
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+import Engine.UI.CSS.Minilanguage
+from Engine.UI.CSS.Fill import Colour
+from Engine.UI.CSS.Selectors import Is
+from Engine.UI.CSS.Rules import Rule
+
+from test_ResourceVFS import *
+import CSSLoader
+import Manager
+
+class CSSLoaderTest(unittest.TestCase):
+    def test_loadCSS(self):
+        Engine.UI.CSS.Minilanguage.ElementNames().registerWidgetClass(int)
+        TestMount["/test.css"] = """
+int {
+    background-color: rgba(1., 0., 0., 1.);
+}
+""".encode("utf8")
+        rules = Manager.ResourceManager().require('/data/test.css')
+        self.assertEqual(rules,
+            [Rule([Is(int)], [("background-color", (Colour(1., 0., 0., 1.),))])]
+        )
+        del Engine.UI.CSS.Minilanguage.ElementNames()["int"]
+

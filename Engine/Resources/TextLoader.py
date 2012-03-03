@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: TextLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +22,30 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+from Base import ResourceLoader
+from Manager import ResourceManager
 
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+class TextLoader(ResourceLoader):
+    """
+    Implement a loader for text resources.
+    """
+
+    def __init__(self, **kwargs):
+        super(TextLoader, self).__init__(
+            [unicode, str],
+            ['txt'],
+            **kwargs)
+
+    def load(self, fileLike, targetClass=unicode, encoding="utf8"):
+        text = "\n" . join((line.decode(encoding) for line in fileLike))
+        if targetClass is str:
+            return str(text)
+        else:
+            return unicode(text)
+
+# register an instance of TextLoader with the resource manager
+ResourceManager().registerResourceLoader(TextLoader)
+

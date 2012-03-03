@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: test_unittest.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +22,35 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
+import unittest
 
-from __future__ import unicode_literals, print_function, division
-from our_future import *
+class TestUnittest(unittest.TestCase):
+    @unittest.expectedFailure
+    def test_expectedFailure(self):
+        self.assertTrue(False)
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+    @unittest.skip("Because we can")
+    def test_skip(self):
+        pass
 
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+    @unittest.expectedFailure
+    def test_unexpectedSuccess(self):
+        pass
+
+    def test_pass(self):
+        pass
+
+    def test_error(self):
+        raise Exception()
+
+    def test_failure(self):
+        self.assertTrue(False)
+        
+class TestUnittest2(unittest.TestCase):
+    def runTest(self):
+        self.assertTrue(False)
+
+# Only for testing the unittest framework output. Remove del to test
+# output for all cases.
+del TestUnittest
+del TestUnittest2

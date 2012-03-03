@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: SceneWidget.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +22,34 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+__all__ = ["SceneWidget"]
 
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+from WidgetBase import Widget
+from OpenGL.GL import *
+from OpenGL.GLU import *
+
+class SceneWidget(Widget):
+    def __init__(self, parent, **kwargs):
+        # FIXME: pass scene graph and camera to use ;)
+        super(SceneWidget, self).__init__(parent, **kwargs)
+        self.FOV = 60.0
+        self.ZNear = 1.0
+        self.ZFar = 100.0
+
+    def _setupProjection(self):
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(self.FOV, self.AbsoluteRect.Width / self.AbsoluteRect.Height, self.ZNear, self.ZFar)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+
+    def _resetProjection(self):
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glMatrixMode(GL_MODELVIEW)
+
+    def renderScene(self):
+        pass

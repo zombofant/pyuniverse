@@ -1,6 +1,5 @@
-#!/usr/bin/python2
 # encoding=utf8
-# File name: py-universe.py
+# File name: test_Manager.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +23,19 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+import unittest
+from Manager import ResourceManager
 
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+class ResourceManagerTest(unittest.TestCase):
+    def _encodedDataIterable(self, encoding):
+        return (line.encode(encoding) for line in self.data.split("\n"))
+
+class ResourceManagerSingletonTest(unittest.TestCase):
+    def test_singleton(self):
+        instanceA, instanceB = ResourceManager(), ResourceManager()
+        self.assertIs(instanceA, instanceB)
+        del instanceA, instanceB
+

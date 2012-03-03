@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: test_iterutils.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +22,20 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+import unittest
 
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+import iterutils
+
+class Iterutils(unittest.TestCase):
+    def test_interleaved(self):
+        l1 = [10, 20, 30]
+        l2 = [15, 25, 35, 45]
+        l3 = [17, 27, 37]
+        self.assertSequenceEqual(
+            list(iterutils.interleave(l1, l2, l3)),
+            [10, 15, 17, 20, 25, 27, 30, 35, 37]
+        )
+        

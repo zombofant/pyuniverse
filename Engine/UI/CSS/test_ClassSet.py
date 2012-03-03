@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: test_ClassSet.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +22,36 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+import unittest
 
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+from ClassSet import ClassSet
+
+class ClassSetInstanceTest(unittest.TestCase):
+    def setUp(self):
+        self.instance = ClassSet()
+    
+    def test_init(self):
+        self.assertEqual(len(self.instance), 0)
+
+    def test_add(self):
+        toAdd = ["testclass"]
+        self.assertEqual(self.instance.__iadd__(10), NotImplemented)
+        self.instance += toAdd
+        self.assertIn(toAdd[0], self.instance)
+        self.assertEqual(list(self.instance), toAdd)
+
+    def test_sub(self):
+        classes = ["testclass", "moreclass", "anotherclass"]
+        self.instance += classes
+        self.instance -= classes[0]
+        self.assertEqual(list(self.instance), classes[1:])
+        self.instance -= classes[1:]
+        self.assertEqual(len(self.instance), 0)
+
+    def tearDown(self):
+        del self.instance
+    
+    

@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: Base.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +22,23 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GL.framebufferobjects import *
 
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+class Object(object):
+    def __init__(self, **kwargs):
+        super(Object, self).__init__(**kwargs)
+        self.id = None
+
+class BindableObject(Object):
+    def bind(self):
+        self._bindCall(self._bindClass, self.id)
+
+    @classmethod
+    def unbind(cls):
+        cls._bindCall(cls._bindClass, 0)
+

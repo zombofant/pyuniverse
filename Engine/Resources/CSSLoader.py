@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: CSSLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +22,31 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+from Base import ResourceLoader
+from Manager import ResourceManager
 
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+from Engine.UI.CSS.Parser import Parser
+
+class CSSLoader(ResourceLoader):
+    """
+    Implements a loader for CSS (cascading style sheet) files.
+    """
+
+    def __init__(self, **kwargs):
+        super(CSSLoader, self).__init__(
+            [list],
+            ['css'],
+            relativePathPrefix="/data/css",
+            **kwargs)
+        self._parser = Parser()
+
+    def load(self, fileLike, targetClass=list):
+        assert targetClass is list
+        return self._parser.parse(fileLike)
+
+# register an instance of TextLoader with the resource manager
+ResourceManager().registerResourceLoader(CSSLoader)
+

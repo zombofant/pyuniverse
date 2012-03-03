@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: test_BoxWidget.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +22,33 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+import unittest
 
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+from CSS.Rect import Rect
+
+from WidgetBase import Widget
+from RootWidget import RootWidget
+from BoxWidget import VBox, HBox
+
+from test_Widget import WidgetInstanceTest
+
+class VBoxAlignment(WidgetInstanceTest):
+    def setUp(self):
+        super(VBoxAlignment, self).setUp()
+        self.instance.AbsoluteRect = Rect(0, 0, 256, 256)
+        self.root = self.instance
+        self.instance = VBox(self.root)
+        self.instance.AbsoluteRect = Rect(0, 0, 256, 256)
+
+    def tearDown(self):
+        del self.instance
+        del self.root
+    
+    def test_basic(self):
+        self.widgetA, self.widgetB = Widget(self.instance), Widget(self.instance)
+        self.root.realign()
+        self.assertEqual(self.widgetA.AbsoluteRect, Rect(0, 0, 256, 128))
+        self.assertEqual(self.widgetB.AbsoluteRect, Rect(0, 128, 256, 256))

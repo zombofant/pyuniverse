@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: limits.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +22,17 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
 
-from __future__ import unicode_literals, print_function, division
-from our_future import *
+from OpenGL.GL.ARB import *
+from OpenGL.GL.glget import *
+from OpenGL.GL.glget import addGLGetConstant
+addGLGetConstant(0x880F, (1,) )
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
-
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+def getAll():
+    global MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB
+    
+    MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB = glGetIntegerv(0x880F)
+    
+def printAll():
+    global MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB
+    print("Max native tex instructions: {0}".format(MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB))

@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: Errors.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +22,27 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+import errno
 
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+class VFSError(BaseException):
+    pass
+
+class VFSIOError(IOError, VFSError):
+    def _processFileNameArgument(self, fileName):
+        return (": '"+fileName+"'") if fileName is not None else ""
+
+class VFSPermissionDeniedError(VFSIOError):
+    def __init__(self, fileName):
+        super(VFSPermissionDeniedError, self).__init__(errno.EACCES, "Permission denied{0}".format(self._processFileNameArgument(fileName)))
+
+class VFSFileNotFoundError(VFSIOError):
+    def __init__(self, fileName):
+        super(VFSFileNotFoundError, self).__init__(errno.ENOENT, "No such file or directory{0}".format(self._processFileNameArgument(fileName)))
+
+SemanticException = {
+    errno.EACCES: VFSPermissionDeniedError,
+    errno.ENOENT: VFSFileNotFoundError
+}

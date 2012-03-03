@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: ScreenWidget.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,18 +22,35 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
+__all__ = ["ScreenWidget"]
 
-if __name__ == '__main__':
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
-    app.run()
+import CSS.Minilanguage
+
+from WidgetBase import ParentWidget
+
+class ScreenWidget(ParentWidget):
+    """
+    Represents an operating system screen or window.
+
+    This is used by the RootWidget *Application* to manage windows.
+    """
+    
+    def __init__(self, parent, window, **kwargs):
+        super(ScreenWidget, self).__init__(parent, **kwargs)
+        self._window = window
+
+    def doAlign(self):
+        for child in self:
+            child.AbsoluteRect = self.AbsoluteRect
+
+    def render(self):
+        super(ScreenWidget, self).render()
+
+    @property
+    def Window(self):
+        return self._window
+
+CSS.Minilanguage.ElementNames().registerWidgetClass(ScreenWidget)
