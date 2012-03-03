@@ -130,7 +130,7 @@ class Transformation(object):
         if degrees:
             angle = angle*np.pi/180.
         axisX, axisY, axisZ = vectorL[0], vectorL[1], vectorL[2]
-        absol = np.sqrt(axisX*axisX+axisY*axisY+axisZ*axisZ)
+        absol = float(np.sqrt(axisX*axisX+axisY*axisY+axisZ*axisZ))
         if absol == 0:
             return
         axisX /= absol
