@@ -50,6 +50,8 @@ class Scene(SceneWidget):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
         self.rotZ = 0.
+        self._frameN = 0
+        self._frameT = 0
         self._sceneGraph = SceneGraph()
         self._testModel = ResourceManager().require('die.obj', RenderModel)
         self._node = Node() #rotationsnode 
@@ -62,6 +64,10 @@ class Scene(SceneWidget):
             self._node.addChild(transNode)
  
     def renderScene(self):
+        if self._frameT >= 5:
+            print('%i Frames/s' % (self._frameN // 5))
+            self._frameN = 0
+            self._frameT = 0
         self._setupProjection()
         glEnable(GL_CULL_FACE)
         glEnable(GL_TEXTURE_2D)
@@ -74,12 +80,14 @@ class Scene(SceneWidget):
         self._resetProjection()
         glPopMatrix()
         glDisable(GL_CULL_FACE)
+        self._frameN += 1
 
     def update(self, timeDelta):
         self.rotX += timeDelta * 22.
         self.rotZ += timeDelta * 70.
         self.rotX -= (self.rotX // 360 ) * 360
         self.rotZ -= (self.rotZ // 360) * 360
+        self._frameT += timeDelta
         # print(timeDelta)
 
 class PythonicUniverse(Application):
