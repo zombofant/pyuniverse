@@ -164,9 +164,6 @@ class QuotaCargo(AbstractCargo):
     def add(self, tradable, amount):
         """
         Adds the given *amount* of *tradable* to this container.
-
-        If *allowOverflow* is set, it is allowed to add more than the
-        quota allows, except if the quota is already overfull.
         """
         magnitude = tradable.SizeMagnitude
         if magnitude > self._maxSizeMagnitude:
