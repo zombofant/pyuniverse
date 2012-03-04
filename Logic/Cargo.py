@@ -72,6 +72,7 @@ class AbstractCargo(object):
     def UsedCapacity(self):
         return self._usedCapacity
 
+
 class Cargo(AbstractCargo):
     def __init__(self, maxSizeMagnitude, capacity, **kwargs):
         super(Cargo, self).__init__(maxSizeMagnitude, capacity, **kwargs)
@@ -127,6 +128,7 @@ class Cargo(AbstractCargo):
             raise ContainerError("Cannot resize container with stuff in it.")
         self._capacity = int(value)
 
+
 class QuotaStack(Cargo):
     def __init__(self, quotaCargo, maxSizeMagnitude, limits, **kwargs):
         capacity, self._allowOverflow = limits
@@ -144,7 +146,8 @@ class QuotaStack(Cargo):
     def _checkCapacity(self, more):
         if self._usedCapacity + more > self._capacity:
             raise QuotaCapacityError(more, self, self._cargo)
-    
+
+
 class QuotaCargo(AbstractCargo):
     def __init__(self, maxSizeMagnitude, capacity, quotaGroupDict, groupLimits, **kwargs):
         super(QuotaCargo, self).__init__(maxSizeMagnitude, capacity)
@@ -154,7 +157,7 @@ class QuotaCargo(AbstractCargo):
             quotaCargo = self._contents.setdefault(group, QuotaStack(self, maxSizeMagnitude, groupLimits[group]))
             self._quotaDict[tradable] = quotaCargo
 
-    def _getQuotaCargo(self, tradable):
+    def _getQuotaStack(self, tradable):
         quotaDict = self._quotaDict
         cargo = quotaDict.get(tradable, None)
         if cargo is None:
@@ -169,7 +172,7 @@ class QuotaCargo(AbstractCargo):
         if magnitude > self._maxSizeMagnitude:
             raise MagnitudeError(magnitude, self)
         
-        cargo = self._getQuotaCargo(tradable)
+        cargo = self._getQuotaStack(tradable)
         if cargo is None:
             raise TradableNotAllowedError(tradable, self)
 
@@ -180,13 +183,13 @@ class QuotaCargo(AbstractCargo):
         self._usedCapacity += tradable.Size * amount
 
     def remove(self, tradable, amount):
-        cargo = self._getQuotaCargo(tradable)
+        cargo = self._getQuotaStack(tradable)
         if cargo is None:
-            return # its not in, so we cannot remove it. no error
+            return
 
         status = cargo.remove(tradable, amount)
         if status:
-            self._usedCapacity -= amount * tradable.Size
+            self._usedCapacity -= status * tradable.Size
 
     def __getitem__(self, tradable):
         cargo = self._getQuotaCargo(tradable)
