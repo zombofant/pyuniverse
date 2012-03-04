@@ -88,15 +88,20 @@ class QuotaCargoTest(CargoTestCase):
     def _setupCargo(self):
         cargo = QuotaCargo(
             10,
+            100,
             {
                 self.wareS: 0,
                 self.wareM: 0,
                 self.wareL: 1,
                 None: 2
             },
-            [30, 20, 10]
+            [
+                (30, True),
+                (20, False),
+                (10, False)
+            ]
         )
-        self.assertEqual(cargo.Capacity, 60)
+        self.assertEqual(cargo.Capacity, 100)
         return cargo
 
     def test_add(self):
@@ -124,4 +129,12 @@ class QuotaCargoTest(CargoTestCase):
         cargo.remove(self.wareS, 10)
         self.assertEqual(cargo.UsedCapacity, 20)
         self.assertEqual(cargo[self.wareS], 20)
+
+    def test_overflow(self):
+        cargo = self._setupCargo()
+        cargo.add(self.wareM, 10)
+        cargo.add(self.wareS, 20)
+        self.assertEqual(cargo.UsedCapacity, 40)
+        self.assertEqual(cargo[self.wareS], 20)
+        self.assertEqual(cargo[self.wareM], 10)
     

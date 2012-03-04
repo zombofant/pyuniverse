@@ -36,11 +36,6 @@ class AbstractCargo(object):
         self._maxSizeMagnitude = int(maxSizeMagnitude)
         self._capacity = int(capacity)
         self._usedCapacity = 0
-    
-    def add(self, tradable, amount):
-        error = self.addNoException(tradable, amount)
-        if error is not None:
-            raise error
 
     def __setitem__(self, tradable, amount):
         amount = int(amount)
@@ -54,6 +49,10 @@ class AbstractCargo(object):
 
     def __delitem__(self, tradable, amount):
         self.remove(tradable, self[tradable])
+
+    def _checkCapacity(self, more):
+        if self._usedCapacity + more > self._capacity:
+            raise CapacityError(more, self)
 
     @property
     def Capacity(self):
@@ -78,25 +77,28 @@ class Cargo(AbstractCargo):
         super(Cargo, self).__init__(maxSizeMagnitude, capacity, **kwargs)
         self._contents = {}
 
-    def addNoException(self, tradable, amount):
+    def _forceAdd(self, tradable, amount, total):
+        self._contents[tradable] = self._contents.setdefault(tradable, 0) + amount
+        self._usedCapacity += total
+
+    def add(self, tradable, amount):
         """
-        Attempts the given *amount* of *tradable* to the cargo. This
-        does not raise any Exception, but returns them in case of an
-        error. Its up to the user to raise the exception if needed or
-        handle it properly.
+        Attempts the given *amount* of *tradable* to the cargo. 
 
         *tradable* must be hashable for this to work. See the Freeze
         module to see how to produce hashable instances of some objects.
+
+        The check for overflow is done with *_checkCapacity*, which by
+        default raises a CapacityError if there is not enough space
+        for the given *amount* of *tradable*.
         """
         
-        size, magnitude = tradable.Size, tradable.SizeMagnitude
+        magnitude = tradable.SizeMagnitude
         if magnitude > self._maxSizeMagnitude:
-            return MagnitudeError(magnitude, self)
-        total = size * amount
-        if total + self._usedCapacity > self._capacity:
-            return CapacityError(total, self)
-        self._contents[tradable] = self._contents.setdefault(tradable, 0) + amount
-        self._usedCapacity += total
+            raise MagnitudeError(magnitude, self)
+        total = tradable.Size * amount
+        self._checkCapacity(total)
+        self._forceAdd(tradable, amount, total)
 
     def __iter__(self):
         return self._contents.iteritems()
@@ -124,15 +126,32 @@ class Cargo(AbstractCargo):
         if len(self._contents) > 0:
             raise ContainerError("Cannot resize container with stuff in it.")
         self._capacity = int(value)
+
+class QuotaStack(Cargo):
+    def __init__(self, quotaCargo, maxSizeMagnitude, limits, **kwargs):
+        capacity, self._allowOverflow = limits
+        super(QuotaStack, self).__init__(maxSizeMagnitude, capacity, **kwargs)
+        self._cargo = quotaCargo
+
+    def add(self, tradable, amount):
+        total = tradable.Size * amount
+        # we use 1 here for the capacity check if overflowing is allowed
+        # as we do not want to allow a full stack to become overfull
+        # (only non-full stacks may become overfull)
+        self._checkCapacity(1 if self._allowOverflow else total)
+        self._forceAdd(tradable, amount, total)
+
+    def _checkCapacity(self, more):
+        if self._usedCapacity + more > self._capacity:
+            raise QuotaCapacityError(more, self, self._cargo)
     
 class QuotaCargo(AbstractCargo):
-    def __init__(self, maxSizeMagnitude, quotaGroupDict, groupLimits, **kwargs):
-        capacitySum = sum(groupLimits)
-        super(QuotaCargo, self).__init__(maxSizeMagnitude, capacitySum)
+    def __init__(self, maxSizeMagnitude, capacity, quotaGroupDict, groupLimits, **kwargs):
+        super(QuotaCargo, self).__init__(maxSizeMagnitude, capacity)
         self._contents = dict()
         self._quotaDict = dict()
         for tradable, group in quotaGroupDict.iteritems():
-            quotaCargo = self._contents.setdefault(group, Cargo(maxSizeMagnitude, groupLimits[group]))
+            quotaCargo = self._contents.setdefault(group, QuotaStack(self, maxSizeMagnitude, groupLimits[group]))
             self._quotaDict[tradable] = quotaCargo
 
     def _getQuotaCargo(self, tradable):
@@ -142,17 +161,24 @@ class QuotaCargo(AbstractCargo):
             cargo = quotaDict.get(None, None)
         return cargo
 
-    def addNoException(self, tradable, amount):
+    def add(self, tradable, amount):
+        """
+        Adds the given *amount* of *tradable* to this container.
+
+        If *allowOverflow* is set, it is allowed to add more than the
+        quota allows, except if the quota is already overfull.
+        """
+        magnitude = tradable.SizeMagnitude
+        if magnitude > self._maxSizeMagnitude:
+            raise MagnitudeError(magnitude, self)
+        
         cargo = self._getQuotaCargo(tradable)
         if cargo is None:
-            return TradableNotAllowedError(tradable, self)
+            raise TradableNotAllowedError(tradable, self)
 
-        error = cargo.addNoException(tradable, amount)
-        if error is not None:
-            if isinstance(error, CapacityError):
-                return QuotaCapacityError.fromCapacityError(error, self)
-            else:
-                return error
+        total = amount * tradable.Size
+        self._checkCapacity(total)
+        cargo.add(tradable, amount)
 
         self._usedCapacity += tradable.Size * amount
 
