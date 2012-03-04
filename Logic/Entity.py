@@ -1,4 +1,4 @@
-# File name: Object.py
+# File name: Entity.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,63 +22,43 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Base for all game objects and the default object types
-"""
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-class Object(object):
+class Entity(object):
     """
-    Base class for all game objects except entities.
+    This refers to a diplomatic (or more general, communication) entity,
+    which other entities can make contact with.
+    """
+
+    def __init__(self, **kwargs):
+        super(Entity, self).__init__(**kwargs)
+
+
+class ControllerEntity(Entity):
+    """
+    These entities reflect a player directly attached to the server, be
+    it an AI or a human player.
     """
     
     def __init__(self, **kwargs):
-        super(Object, self).__init__(**kwargs)
+        super(ControllerEntity, self).__init__(**kwargs)
 
 
-class PositionableObject(Object):
+class MetaEntity(Entity):
     """
-    Base class for any object which is positionable in a sector.
-    """
-    
-    def __init__(self, **kwargs):
-        super(PositionableObject, self).__init__(**kwargs)
-        self._sector = None
-        self._position = None
-
-
-class TradableObject(Object):
-    """
-    Base class for any tradable object; that is an object which can be
-    carried in a cargo bay and traded in a station.
+    Base class for meta entities like companies, nations, etc.
     """
     
     def __init__(self, **kwargs):
-        super(TradableObject, self).__init__(**kwargs)
-        self._minPrice = None
-        self._maxPrice = None
-        self._sizeValue = None
-        self._sizeMagnitude = None
-
-    @property
-    def Size(self):
-        return self._sizeMagnitude * self._sizeValue
-
-    @property
-    def SizeMagnitude(self):
-        return self._sizeMagnitude
-
-    @property
-    def SizeValue(self):
-        return self._sizeValue
+        super(MetaEntity, self).__init__(**kwargs)
 
 
-class OwnableObject(Object):
+class MicroEntity(Entity):
     """
-    Any object which can have one or more owner entities assigned 
+    A micro management entity. This is a base class from which also
+    Objects may derive to supply event handlers.
     """
     
     def __init__(self, **kwargs):
-        super(OwnableObject, self).__init__(**kwargs)
+        super(MicroEntity, self).__init__(**kwargs)
