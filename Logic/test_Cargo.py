@@ -150,4 +150,59 @@ class QuotaCargoTest(CargoTestCase):
         self.assertEqual(cargo.Capacity, 30)
         self.assertRaises(CapacityError, cargo.add, self.wareS, 1)
         self.assertRaises(ContainerError, setattr, cargo, "Capacity", 29)
-    
+
+class DyanmicQuotaCargoTest(CargoTestCase):
+    def _setupCargo(self):
+        cargo = QuotaCargo(
+            10,
+            100
+        )
+        self.assertEqual(cargo.Capacity, 100)
+        return cargo
+
+    def test_addQuota(self):
+        cargo = self._setupCargo()
+        self.assertRaises(TradableNotAllowedError, cargo.add, self.wareS, 1)
+        cargo.addQuota(100, [self.wareS], False)
+        cargo.add(self.wareS, 10)
+        self.assertEqual(cargo[self.wareS], 10)
+        self.assertRaises(TradableNotAllowedError, cargo.add, self.wareM, 1)
+
+    def test_addTradableToQuota(self):
+        cargo = self._setupCargo()
+        cargo.addQuota(100, [self.wareS], False)
+        cargo.add(self.wareS, 10)
+        cargo.addTradableToQuota(cargo.getQuotaStack(self.wareS), self.wareM)
+        cargo.add(self.wareM, 10)
+        self.assertEqual(cargo[self.wareM], 10)
+
+    def test_addDefaultQuota(self):
+        cargo = self._setupCargo()
+        cargo.addDefaultQuota(100)
+        cargo.add(self.wareS, 1)
+        self.assertEqual(cargo[self.wareS], 1)
+
+    def test_changeQuotaeWithStoredValues(self):
+        cargo = self._setupCargo()
+        defaultStack = cargo.addDefaultQuota(100)
+        cargo.add(self.wareS, 50)
+        self.assertEqual(defaultStack[self.wareS], 50)
+        stack = cargo.addQuota(50, [self.wareS])
+        self.assertEqual(stack[self.wareS], 50)
+        self.assertEqual(defaultStack[self.wareS], 0)
+        self.assertEqual(defaultStack.UsedCapacity, 0)
+        self.assertEqual(stack.UsedCapacity, 50)
+        self.assertRaises(QuotaCapacityError, cargo.add, self.wareS, 1)
+
+        cargo.add(self.wareM, 10)
+        cargo.addTradableToQuota(stack, self.wareM)
+        self.assertEqual(defaultStack.UsedCapacity, 0)
+        self.assertEqual(stack.UsedCapacity, 70)
+        self.assertEqual(stack[self.wareM], 10)
+        self.assertRaises(CapacityError, cargo.add, self.wareM, 30)
+
+        cargo.removeTradableQuota(self.wareS)
+        self.assertEqual(defaultStack.UsedCapacity, 50)
+        self.assertEqual(stack.UsedCapacity, 20)
+        self.assertEqual(stack[self.wareS], 0)
+        self.assertEqual(defaultStack[self.wareS], 50)

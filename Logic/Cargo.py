@@ -156,18 +156,22 @@ class QuotaCargo(AbstractCargo):
         self._stacks = []
         self._stackDict = dict()
         self._tradableDict = dict()
-        for tradables, limit, allowOverflow in quotae:
-            if tradables is None:
-                self.addDefaultQuota(limit, allowOverflow=allowOverflow)
-            else:
-                self.addQuota(limit, tradables=tradables, allowOverflow=allowOverflow)
+        if quotae is not None:
+            for tradables, limit, allowOverflow in quotae:
+                if tradables is None:
+                    self.addDefaultQuota(limit, allowOverflow=allowOverflow)
+                else:
+                    self.addQuota(limit, tradables=tradables, allowOverflow=allowOverflow)
 
-    def _getQuotaStack(self, tradable):
+    def getQuotaStackDefault(self, tradable):
         quotaDict = self._tradableDict
         cargo = quotaDict.get(tradable, None)
         if cargo is None:
             cargo = self._defaultStack
         return cargo
+
+    def getQuotaStack(self, tradable):
+        return self._tradableDict.get(tradable, None)
 
     def add(self, tradable, amount):
         """
@@ -177,7 +181,7 @@ class QuotaCargo(AbstractCargo):
         if magnitude > self._maxSizeMagnitude:
             raise MagnitudeError(magnitude, self)
         
-        cargo = self._getQuotaStack(tradable)
+        cargo = self.getQuotaStackDefault(tradable)
         if cargo is None:
             raise TradableNotAllowedError(tradable, self)
 
@@ -188,7 +192,7 @@ class QuotaCargo(AbstractCargo):
         self._usedCapacity += tradable.Size * amount
 
     def remove(self, tradable, amount):
-        cargo = self._getQuotaStack(tradable)
+        cargo = self.getQuotaStackDefault(tradable)
         if cargo is None:
             return
 
@@ -197,7 +201,7 @@ class QuotaCargo(AbstractCargo):
             self._usedCapacity -= status * tradable.Size
 
     def __getitem__(self, tradable):
-        cargo = self._getQuotaStack(tradable)
+        cargo = self.getQuotaStackDefault(tradable)
         return 0 if cargo is None else cargo[tradable]
 
     def addDefaultQuota(self, limit, allowOverflow=False):
@@ -207,29 +211,57 @@ class QuotaCargo(AbstractCargo):
         self._stackDict[stack] = None
         self._tradableDict[None] = stack
         self._defaultStack = stack
+        return stack
 
     def addQuota(self, limit, tradables=None, allowOverflow=False):
         stack = QuotaStack(self, self._maxSizeMagnitude, limit, allowOverflow)
+        moveList = list()
         if tradables is not None:
             for tradable in tradables:
                 if tradable in self._tradableDict:
                     raise QuotaError("{0} is already assigned to a quota stack in {1}".format(tradable, self))
+                amount = self[tradable]
+                if amount > 0:
+                    moveList.append((tradable, amount))
                 self._tradableDict[tradable] = stack
             self._stackDict[stack] = set(tradables)
         else:
             self._stackDict[stack] = set()
         self._stacks.append(stack)
+        # we know for sure that the previous amount was in the default
+        # container; and we just created a new one. so we just
+        # hard-transfer the values
+        defaultStack = self._defaultStack
+        for tradable, amount in moveList:
+            defaultStack.remove(tradable, amount)
+            total = tradable.Size * amount
+            stack._forceAdd(tradable, amount, total)
+        return stack
 
     def addTradableToQuota(self, quotaStack, tradable):
         stack = self._tradableDict.get(tradable, None)
         if stack is not None:
             raise QuotaError("{0} is already assigned to a quota stack in {1}".format(tradable, self))
-        self._stackDict[stack].add(tradable)
-        self._tradableDict[tradable] = stack
+        amount = self[tradable]
+        self._stackDict[quotaStack].add(tradable)
+        self._tradableDict[tradable] = quotaStack
+        # we know for sure that this stack has no elements for the new
+        # tradable yet. Otherwise the exception had flown before
+        if amount > 0:
+            self._defaultStack.remove(tradable, amount)
+            total = tradable.Size * amount
+            quotaStack._forceAdd(tradable, amount, total)
+        return stack
 
     def removeTradableQuota(self, tradable):
         stack = self._tradableDict.get(tradable, None)
         if stack is None:
             return
+        amount = self[tradable]
         del self._tradableDict[tradable]
         self._stackDict[stack].remove(tradable)
+        if amount > 0:
+            if self._defaultStack is None:
+                raise QuotaError("Attempt to remove a tradable quota for {0} while its stored and no default quota is defined.".format(tradable))
+            stack.remove(tradable, amount)
+            self._defaultStack._forceAdd(tradable, amount, tradable.Size * amount)
