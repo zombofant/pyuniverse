@@ -99,16 +99,10 @@ class QuotaCargoTest(CargoTestCase):
         cargo = QuotaCargo(
             10,
             100,
-            {
-                self.wareS: 0,
-                self.wareM: 0,
-                self.wareL: 1,
-                None: 2
-            },
             [
-                (30, True),
-                (20, False),
-                (10, False)
+                ([self.wareS, self.wareM], 30, True),
+                ([self.wareL], 20, False),
+                (None, 10, False)
             ]
         )
         self.assertEqual(cargo.Capacity, 100)
