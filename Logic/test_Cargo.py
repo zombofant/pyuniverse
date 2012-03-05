@@ -80,6 +80,16 @@ class CargoTest(CargoTestCase):
         self.assertRaises(MagnitudeError, cargo.add, self.wareL, 1)
         self.assertEqual(cargo.UsedCapacity, 0)
 
+    def test_resize(self):
+        cargo = self._setupCargo(2, 10)
+        self.assertEqual(cargo.UsedCapacity, 0)
+        self.assertEqual(cargo.Capacity, 10)
+        cargo.add(self.wareS, 5)
+        self.assertRaises(ContainerError, setattr, cargo, "Capacity", 4)
+        cargo.Capacity = 5
+        self.assertEqual(cargo.Capacity, 5)
+        
+
 class QuotaCargoTest(CargoTestCase):
     def setUp(self):
         super(QuotaCargoTest, self).setUp()
@@ -137,4 +147,13 @@ class QuotaCargoTest(CargoTestCase):
         self.assertEqual(cargo.UsedCapacity, 40)
         self.assertEqual(cargo[self.wareS], 20)
         self.assertEqual(cargo[self.wareM], 10)
+
+    def test_resize(self):
+        cargo = self._setupCargo()
+        cargo.add(self.wareM, 10)
+        cargo.add(self.wareS, 10)
+        cargo.Capacity = 30
+        self.assertEqual(cargo.Capacity, 30)
+        self.assertRaises(CapacityError, cargo.add, self.wareS, 1)
+        self.assertRaises(ContainerError, setattr, cargo, "Capacity", 29)
     

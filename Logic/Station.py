@@ -26,7 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Object import TradableObject, OwnableObject, PositionableObject
-from Cargo import Cargo
+from Cargo import QuotaCargo
 
 class Station(TradableObject, OwnableObject, PositionableObject):
     def __init__(self, **kwargs):
@@ -35,5 +35,8 @@ class Station(TradableObject, OwnableObject, PositionableObject):
         self.Resources = set()
         self.SecondaryResources = set()
         self.DockWares = set()
+        self.Cargo = QuotaCargo()
 
+    def addProduct(self, product, perCycle):
+        
     

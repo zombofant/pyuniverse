@@ -58,6 +58,13 @@ class AbstractCargo(object):
     def Capacity(self):
         return self._capacity
 
+    @Capacity.setter
+    def Capacity(self, value):
+        if value >= self._usedCapacity:
+            self._capacity = int(value)
+        else:
+            raise ContainerError("Cannot resize a container to a size smaller than the currently used storage.")
+
     @property
     def MaxSizeMagnitude(self):
         return self._maxSizeMagnitude
@@ -121,12 +128,6 @@ class Cargo(AbstractCargo):
 
     def __getitem__(self, tradable):
         return self._contents.get(tradable, 0)
-
-    @AbstractCargo.Capacity.setter
-    def Capacity(self, value):
-        if len(self._contents) > 0:
-            raise ContainerError("Cannot resize container with stuff in it.")
-        self._capacity = int(value)
 
 
 class QuotaStack(Cargo):
@@ -192,6 +193,6 @@ class QuotaCargo(AbstractCargo):
             self._usedCapacity -= status * tradable.Size
 
     def __getitem__(self, tradable):
-        cargo = self._getQuotaCargo(tradable)
+        cargo = self._getQuotaStack(tradable)
         return 0 if cargo is None else cargo[tradable]
     
