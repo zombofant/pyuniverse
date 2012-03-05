@@ -30,6 +30,9 @@ import itertools
 from Errors import *
 from Object import TradableObject
 
+class Sizes(object):
+    SizeS, SizeM, SizeL, SizeXL, SizeST = 1, 2, 5, 10, 10000
+
 class AbstractCargo(object):
     def __init__(self, maxSizeMagnitude, capacity, **kwargs):
         super(AbstractCargo, self).__init__(**kwargs)
