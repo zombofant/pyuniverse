@@ -39,6 +39,15 @@ class Object(object):
     def __init__(self, **kwargs):
         super(Object, self).__init__(**kwargs)
 
+    def iterEntities(self):
+        """
+        Returns an iterable which yields all directly associated
+        entities of the given object. The actual meaning depends on the
+        Object itself, but iterate over all entities of these entities
+        should yield all entities one can concact using this Object.
+        """
+        return ()
+
 
 class Entity(Object):
     """
