@@ -29,8 +29,6 @@ Base for all game objects and the default object types
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Entity import Entity
-
 class Object(object):
     """
     Base class for all game objects.

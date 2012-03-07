@@ -28,7 +28,7 @@ from our_future import *
 import unittest
 
 from Freeze import Frozen
-from Object import TradableObject
+from Objects.Object import TradableObject
 
 class Freeze(unittest.TestCase):
     """def test_TradableObject(self):

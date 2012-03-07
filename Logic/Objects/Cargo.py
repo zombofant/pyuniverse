@@ -27,7 +27,7 @@ from our_future import *
 
 import itertools
 
-from Errors import *
+from Logic.Errors import *
 from Object import TradableObject
 
 class Sizes(object):

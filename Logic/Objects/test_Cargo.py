@@ -29,7 +29,7 @@ import unittest
 
 from Cargo import Cargo, QuotaCargo
 from Object import TradableObject
-from Errors import *
+from Logic.Errors import *
 
 class CargoTestCase(unittest.TestCase):
     def _createWare(self, magnitude, value):
