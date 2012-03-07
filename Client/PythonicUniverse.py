@@ -67,7 +67,7 @@ class Scene(SceneWidget):
         if self._frameT >= 5:
             print('%i Frames/s' % (self._frameN // 5))
             self._frameN = 0
-            self._frameT = 0
+            self._frameT -= 5
         self._setupProjection()
         glEnable(GL_CULL_FACE)
         glEnable(GL_TEXTURE_2D)
