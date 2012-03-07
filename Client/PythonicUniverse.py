@@ -57,14 +57,14 @@ class Scene(SceneWidget):
         self._frameN = 0
         self._frameT = 0
         self._sceneGraph = SceneGraph()
-        self._testModel = ResourceManager().require('die.obj', RenderModel)
+        self._testModel = ResourceManager().require('spaceship.obj', RenderModel)
         self._node = Node() #rotationsnode 
         self._sceneGraph.rootNode.addChild(self._node)
-        n = 100
+        n = 1
         for j in range(0,n):
             transNode = Node()
             transNode.addChild(self._testModel)
-            transNode.LocalTransformation.translate([1.1*(j%math.sqrt(n))-5,1.1*(j//math.sqrt(n))-5,-10])
+            transNode.LocalTransformation.translate([1.1*(j%math.sqrt(n)),1.1*(j//math.sqrt(n)),-10])
             transNode.LocalTransformation.scale([0.3,0.3,0.3])
             self._node.addChild(transNode)
  
@@ -77,6 +77,7 @@ class Scene(SceneWidget):
         glEnable(GL_CULL_FACE)
         glEnable(GL_TEXTURE_2D)
         glPushMatrix()
+        glColor3f(0.5,0.5,0.55)
         self._node.LocalTransformation.rotate(self.rotX, [1., 0.,0.])
         self._node.LocalTransformation.rotate(self.rotZ, [0., 0.,1.])
         self._sceneGraph.update(0)
