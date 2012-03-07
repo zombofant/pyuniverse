@@ -18,18 +18,17 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=10
+current_page=9
 FILE_NAME_0=436;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/py-universe.py;0;4
 FILE_NAME_1=2194;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/Object.py;0;4
-FILE_NAME_2=1051;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/Entity.py;0;4
-FILE_NAME_3=2428;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/Cargo.py;0;4
-FILE_NAME_4=2445;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/Errors.py;0;4
+FILE_NAME_2=1202;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/Entity.py;0;4
+FILE_NAME_3=1206;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/Cargo.py;0;4
+FILE_NAME_4=2024;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/Errors.py;0;4
 FILE_NAME_5=2430;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/.local/freezetest.py;0;4
-FILE_NAME_6=1200;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/Freeze.py;0;4
-FILE_NAME_7=1205;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/test_Freeze.py;0;4
-FILE_NAME_8=1426;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/Station.py;0;4
-FILE_NAME_9=4452;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/test_Cargo.py;0;4
-FILE_NAME_10=2332;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/.local/fullscreen.cpp;0;4
+FILE_NAME_6=1655;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/Freeze.py;0;4
+FILE_NAME_7=1172;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/test_Freeze.py;0;4
+FILE_NAME_8=3460;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/Station.py;0;4
+FILE_NAME_9=7595;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/Logic/test_Cargo.py;0;4
 
 [VTE]
 last_dir=/var/www/dataroot/horazont/priyomdb
