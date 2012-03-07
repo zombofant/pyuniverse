@@ -32,15 +32,19 @@ import pyglet
 import pyglet.window.key as key
 import os
 import sys
+import numpy as np
 
 from Engine.Application import Window, Application
-from Engine.UI import SceneWidget, VBox, HBox
+from Engine.UI import SceneWidget, VBox, HBox, LabelWidget, WindowWidget
 from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
 from Engine.VFS.Mounts import MountDirectory
 from Engine.Resources.Manager import ResourceManager
 import Engine.Resources.TextureLoader
 import Engine.Resources.ModelLoader
 import Engine.Resources.CSSLoader
+import Engine.Resources.MaterialLoader
+import Engine.Resources.ShaderLoader
+from Engine.GL.Shader import Shader
 from Engine.GL.RenderModel import RenderModel
 from Engine.GL.SceneGraph.Core import SceneGraph, Node
 from Engine.UI.Theme import Theme
@@ -103,24 +107,57 @@ class PythonicUniverse(Application):
         self.theme = Theme()
         self.theme.addRules(ResourceManager().require("ui.css"))
 
-        mainScreen = self.windows[0][1]
-
+        mainScreen = self._primaryWidget
         scene = Scene(mainScreen)
         self.addSceneWidget(scene)
 
-        vbox = VBox(mainScreen)
-        hbox1 = HBox(vbox)
-        hbox1.StyleClasses.add("test")
-        hbox2 = HBox(vbox)
-        vbox21 = VBox(hbox2)
-        vbox21.StyleClasses.add("test")
-        vbox22 = VBox(hbox2)
+        window = WindowWidget(self._windowLayer)
+        window.Title.Text = "Test"
         
         self.theme.applyStyles(self)
+
+        self._shader = ResourceManager().require("/data/shaders/ui.shader")
+        self._upsideDownHelper = np.asarray([-1.0, self.AbsoluteRect.Height], dtype=np.float32)
+        self._shader.cacheShaders([
+            {
+                "texturing": True,
+                "upsideDown": True
+            },
+            {
+                "texturing": True,
+                "upsideDown": False
+            },
+            {
+                "texturing": False,
+                "upsideDown": False
+            },
+        ])
+        shader = self._shader.bind(texturing=True, upsideDown=False)
+        self._shaders = [shader]
+        shader.bind()
+        glUniform1i(shader["texture"], 0)
         
+        shader = self._shader.bind(texturing=True, upsideDown=True)
+        self._shaders.append(shader)
+        shader.bind()
+        glUniform1i(shader["texture"], 0)
+        glUniform2fv(shader["upsideDownHelper"], 1, self._upsideDownHelper)
+
+        self._shaders.append(self._shader.bind(texturing=False, upsideDown=False))
+
+        Shader.unbind()
+
+    def _setUIOffset(self, x, y):
+        xy = np.asarray([x, y], dtype=np.float32)
+        for shader in self._shaders:
+            shader.bind()
+            glUniform2fv(shader["uiOffset"], 1, xy)
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.ESCAPE:
             # FIXME: make this without an pyglet.app reference
             pyglet.app.exit()
 
+    def render(self):
+        super(PythonicUniverse, self).render()
+        Shader.unbind()
