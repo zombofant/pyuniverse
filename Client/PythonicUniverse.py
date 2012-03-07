@@ -60,10 +60,11 @@ class Scene(SceneWidget):
         self._testModel = ResourceManager().require('die.obj', RenderModel)
         self._node = Node() #rotationsnode 
         self._sceneGraph.rootNode.addChild(self._node)
-        for j in range(0,25):
+        n = 100
+        for j in range(0,n):
             transNode = Node()
             transNode.addChild(self._testModel)
-            transNode.LocalTransformation.translate([1.1*(j%5)-2.5,1.1*(j//5)-2.2,-5])
+            transNode.LocalTransformation.translate([1.1*(j%math.sqrt(n))-5,1.1*(j//math.sqrt(n))-5,-10])
             transNode.LocalTransformation.scale([0.3,0.3,0.3])
             self._node.addChild(transNode)
  
