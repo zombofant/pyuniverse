@@ -25,6 +25,8 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+from IDManagement import IDManager
+
 class Synchronization(object):
     __singleton = None
     
@@ -42,6 +44,7 @@ class Synchronization(object):
             self._initialized = True
             self._clients = set()
             self._properties = {}
+            self._idManager = self.createIDManager()
 
     def addClient(self, client):
         self._clients.add(client)
@@ -61,3 +64,9 @@ class Synchronization(object):
 
     def iterSubscriptions(self, property, instance):
         return iter(self._properties[property].get(instance, ()))
+
+    def createIDManager(self):
+        return IDManager()
+
+
+SyncClass = Synchronization

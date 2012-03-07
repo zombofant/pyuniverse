@@ -57,4 +57,3 @@ class SynchronizedProperty(object):
     def deleter(self, deleter):
         self._deleter = deleter
         return self
-
