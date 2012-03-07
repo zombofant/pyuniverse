@@ -29,13 +29,25 @@ Base for all game objects and the default object types
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+from Entity import Entity
+
 class Object(object):
     """
-    Base class for all game objects except entities.
+    Base class for all game objects.
     """
     
     def __init__(self, **kwargs):
         super(Object, self).__init__(**kwargs)
+
+
+class Entity(Object):
+    """
+    This refers to a diplomatic (or more general, communication) entity,
+    which other entities can make contact with.
+    """
+
+    def __init__(self, **kwargs):
+        super(Entity, self).__init__(**kwargs)
 
 
 class PositionableObject(Object):
@@ -82,3 +94,16 @@ class OwnableObject(Object):
     
     def __init__(self, **kwargs):
         super(OwnableObject, self).__init__(**kwargs)
+        self._owner = None
+
+    @property
+    def Owner(self):
+        return self._owner
+
+    @Owner.setter
+    def Owner(self, value):
+        if not isinstance(value, Entity):
+            raise TypeError("OwnableObject Owner must be an Entity. Got {0} {1}".format(type(value), value))
+        self._owner = value
+
+

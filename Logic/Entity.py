@@ -25,15 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-class Entity(object):
-    """
-    This refers to a diplomatic (or more general, communication) entity,
-    which other entities can make contact with.
-    """
-
-    def __init__(self, **kwargs):
-        super(Entity, self).__init__(**kwargs)
-
+from Object import Entity
 
 class ControllerEntity(Entity):
     """
