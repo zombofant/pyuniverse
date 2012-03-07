@@ -48,7 +48,7 @@ class Station(TradableObject, OwnableObject, PositionableObject):
                 tradable in self.Resources or
                 tradable in self.SecondaryResources or
                 tradable in self.DockWares):
-            raise ValueError("Tradable {0} already defined as product, resource or dock ware in {1}".format(tradable, self)
+            raise ValueError("Tradable {0} already defined as product, resource or dock ware in {1}".format(tradable, self))
 
     def addProduct(self, product, perCycle):
         self._checkTradable(product)
