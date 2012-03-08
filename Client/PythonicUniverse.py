@@ -60,13 +60,11 @@ class Scene(SceneWidget):
         self._testModel = ResourceManager().require('spaceship.obj', RenderModel)
         self._node = Node() #rotationsnode 
         self._sceneGraph.rootNode.addChild(self._node)
-        n = 1
-        for j in range(0,n):
-            transNode = Node()
-            transNode.addChild(self._testModel)
-            transNode.LocalTransformation.translate([1.1*(j%math.sqrt(n)),1.1*(j//math.sqrt(n)),-10])
-            transNode.LocalTransformation.scale([0.3,0.3,0.3])
-            self._node.addChild(transNode)
+        transNode = Node()
+        transNode.addChild(self._testModel)
+        transNode.LocalTransformation.translate([0.,0.,-12.])
+        transNode.LocalTransformation.scale([0.3,0.3,0.3])
+        self._node.addChild(transNode)
  
     def renderScene(self):
         if self._frameT >= 5:
@@ -75,9 +73,9 @@ class Scene(SceneWidget):
             self._frameT -= 5
         self._setupProjection()
         glEnable(GL_CULL_FACE)
+        glEnable(GL_DEPTH_TEST)
         glEnable(GL_TEXTURE_2D)
         glPushMatrix()
-        glColor3f(0.5,0.5,0.55)
         self._node.LocalTransformation.rotate(self.rotX, [1., 0.,0.])
         self._node.LocalTransformation.rotate(self.rotZ, [0., 0.,1.])
         self._sceneGraph.update(0)
@@ -85,12 +83,13 @@ class Scene(SceneWidget):
         self._node.LocalTransformation.reset()
         self._resetProjection()
         glPopMatrix()
+        glDisable(GL_DEPTH_TEST)
         glDisable(GL_CULL_FACE)
         self._frameN += 1
 
     def update(self, timeDelta):
-        self.rotX += timeDelta * 22.
-        self.rotZ += timeDelta * 70.
+        self.rotX += timeDelta * 5.
+        self.rotZ += timeDelta * 10.
         self.rotX -= (self.rotX // 360 ) * 360
         self.rotZ -= (self.rotZ // 360) * 360
         self._frameT += timeDelta
