@@ -25,18 +25,25 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from IDManagement import IDManager
+from IDManagement import IDManager, MasterIDManager, LocalIDManager
 
 class Synchronization(object):
+    """
+    A service singleton which handles synchronization between multiple
+    server segments.
+    """
+    
     __singleton = None
     
     def __new__(cls, *args, **kwargs):
         if cls is Synchronization:
             raise TypeError("Cannot instanciate Synchronization directly. Set a synchronization class by setting Logic.Synchronization.SyncClass")
-        if cls.__singleton is not None:
-            return cls.__singleton
+        if Synchronization.__singleton is not None:
+            return Synchronization.__singleton
         else:
-            return super(type(Synchronization), cls).__init__(*args, **kwargs)
+            instance = super(type(Synchronization), cls).__new__(cls, *args, **kwargs)
+            Synchronization.__singleton = instance
+            return instance
 
     def __init__(self, **kwargs):
         if not hasattr(self, "_initialized"):
@@ -65,8 +72,18 @@ class Synchronization(object):
     def iterSubscriptions(self, property, instance):
         return iter(self._properties[property].get(instance, ()))
 
+    def getUniqueID(self):
+        return self._idManager.allocateOne()
+
     def createIDManager(self):
         return IDManager()
 
 
 SyncClass = Synchronization
+
+class SyncMasterServer(Synchronization):
+    def __init__(self, **kwargs):
+        super(SyncMasterServer, self).__init__(**kwargs)
+
+    def createIDManager(self):
+        return MasterIDManager()

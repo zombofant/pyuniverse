@@ -28,25 +28,80 @@ from our_future import *
 import itertools
 
 class IDManager(object):
-    def __init__(self, namespace, namespaceSize, **kwargs):
+    def __init__(self, **kwargs):
+        if type(self) is IDManager:
+            raise RuntimeError("Must not instanciate IDManager directly. Did you pick a proper Synchronization service?")
         super(IDManager, self).__init__(**kwargs)
-        self._namespace = namespace
-        self._currentIterable = [range(namespace, namespace+namespaceSize)]
-        self._iterables = [set()]
-        self._maxNamespace = namespace + namespaceSize
+        self._currentIterable = ()
+        self._randomIDs = set()
+
+    def _randomIterable(self):
+        try:
+            yield self._randomIDs.pop()
+        except KeyError:
+            return
+
+    def _pickNewIterable(self):
+        if len(self._randomIDs) > 0:
+            self._currentIterable = self._randomIterable()
+        else:
+            self._getNewNamespace()
 
     def allocateOne(self):
         try:
             return next(self._currentIterable)
         except StopIteration:
-            try:
-                self._currentIterable = self._iterables.pop()
-            except IndexError:
-                # TODO: Allocate a new group of IDs here
-                raise NotImplementedError("Cannot get new IDs.")
+            self._pickNewIterable()
             return next(self._currentIterable)
 
     def releaseOne(self, id):
-        if id >= self._namespace and id < self._maxNamespace:
-            self._iterables.append((id,))
-        
+        self._randomIDs.add(id)
+
+class LocalIDManager(IDManager):
+    def __init__(self, namespace=None, namespaceSize=None, masterProxy=None, **kwargs):
+        super(LocalIDManager, self).__init__(**kwargs)
+        if namespace is not None:
+            self._currentIterable = iter(range(namespace, namespace+namespaceSize))
+            self._namespaces = [(namespace, namespace + namespaceSize)]
+        else:
+            self._currentIterable = iter(())
+            self._namespaces = []
+        self._masterProxy = masterProxy
+
+    def _getNewNamespace(self):
+        if self._masterProxy is None:
+            raise ValueError("Cannot get a new namespace without a master proxy on local ID manager.")
+        min, size = self._masterProxy.getNewNamespace()
+        self._namespaces.append((min, min + size))
+        self._currentIterable = iter(range(min, min + size))
+
+    def releaseOne(self, id):
+        if id == 0:
+            raise ValueError("Attempt to release NULL id.")
+        for min, max in self._namespaces:
+            if id >= min and id < max:
+                super(LocalIDManager, self).releaseOne(id)
+                return
+
+class MasterIDManager(IDManager):
+    def __init__(self, namespaceSize=4096, **kwargs):
+        super(MasterIDManager, self).__init__(**kwargs)
+        self._namespaceSize = namespaceSize
+        self._namespaces = []
+        self._returnedNamespaces = set()
+        self._newNamespaceIterator = iter(itertools.count(1, self._namespaceSize))
+        self._localNamespace = LocalIDManager(*self.getNewNamespace(), masterProxy=self)
+        self.allocateOne = self._localNamespace.allocateOne
+        self.releaseOne = self._localNamespace.releaseOne
+
+    def getNewNamespace(self):
+        if len(self._returnedNamespaces) > 0:
+            namespace = self._returnedNamespaces.pop()
+        else:
+            namespace = next(self._newNamespaceIterator)
+        self._namespaces.append(namespace)
+        return (namespace, self._namespaceSize)
+
+    @property
+    def LocalNamespace(self):
+        return self._localNamespace

@@ -27,6 +27,8 @@ from our_future import *
 
 from Synchronization import SyncClass
 
+import functools
+
 class SynchronizedProperty(object):
     def __init__(self, getter, setter=None, deleter=None):
         super(SynchronizedProperty, self).__init__()
@@ -38,12 +40,18 @@ class SynchronizedProperty(object):
     def __get__(self, instance, owner):
         return self._getter(instance) if instance is not None else self
 
+    def update(self, prop_instance, newValue, client):
+        client.update(prop_instance, newValue)
+
+    def mapValue(self, value):
+        return value
+
     def __set__(self, instance, value):
         if self._setter is None:
             raise AttributeError("Can't set attribute")
-        newValue = self._setter(instance, value)
-        for client in self._sync.iterSubscriptions(self, instance):
-            client.update((prop, instance), value)
+        newValue = self.mapValue(self._setter(instance, value))
+        update = functools.partial(self.update, (prop, instance), newValue)
+        map(update, self._sync.iterSubscriptions(self, instance))
 
     def __delete__(self, instance):
         # deletion should do a setting to a default value
@@ -57,3 +65,7 @@ class SynchronizedProperty(object):
     def deleter(self, deleter):
         self._deleter = deleter
         return self
+
+class ObjectProperty(SynchronizedProperty):
+    def mapValue(self, value):
+        return value.ID

@@ -29,13 +29,16 @@ Base for all game objects and the default object types
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+from Logic.Synchronization.Service import SyncClass
+
 class Object(object):
     """
     Base class for all game objects.
     """
     
-    def __init__(self, **kwargs):
+    def __init__(self, id=None, **kwargs):
         super(Object, self).__init__(**kwargs)
+        self._id = id or SyncClass().getUniqueID()
 
     def iterEntities(self):
         """
@@ -45,6 +48,10 @@ class Object(object):
         should yield all entities one can concact using this Object.
         """
         return ()
+
+    @property
+    def ID(self):
+        return self._id
 
 
 class Entity(Object):
