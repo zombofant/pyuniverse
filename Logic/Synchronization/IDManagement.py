@@ -30,7 +30,7 @@ import itertools
 class IDManager(object):
     def __init__(self, **kwargs):
         if type(self) is IDManager:
-            raise RuntimeError("Must not instanciate IDManager directly. Did you pick a proper Synchronization service?")
+            raise TypeError("Must not instanciate IDManager directly. Did you pick a proper Synchronization service?")
         super(IDManager, self).__init__(**kwargs)
         self._currentIterable = ()
         self._randomIDs = set()

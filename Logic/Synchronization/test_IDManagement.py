@@ -29,6 +29,10 @@ import unittest
 
 import IDManagement as ID
 
+class IDManager(unittest.TestCase):
+    def test_noInit(self):
+        self.assertRaises(TypeError, ID.IDManager)
+
 class LocalIDManager(unittest.TestCase):
     def setUp(self):
         self.manager = ID.LocalIDManager(1, 10)
