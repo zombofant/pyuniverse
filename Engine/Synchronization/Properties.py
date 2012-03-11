@@ -30,29 +30,39 @@ from Service import SyncClass
 import functools
 import iterutils
 
-class SynchronizedProperty(object):
-    def __init__(self, getter, setter=None, deleter=None):
-        super(SynchronizedProperty, self).__init__()
-        self._getter = getter
-        self._setter = None
-        self._deleter = None
+class Synchronizable(object):
+    def __init__(self, **kwargs):
+        super(Synchronizable, self).__init__(**kwargs)
         self._sync = SyncClass()
-
-    def __get__(self, instance, owner):
-        return self._getter(instance) if instance is not None else self
-
+    
     def update(self, prop_instance, newValue, client):
         client.update(prop_instance, newValue)
 
     def mapValue(self, value):
         return value
 
+    def unmapValue(self, value):
+        return value
+
+    def broadcast(self, instance, value):
+        value = self.mapValue(value)
+        update = functools.partial(self.update, (self, instance), value)
+        iterutils.consume(map(update, self._sync.iterSubscriptions(self, instance)), None)
+
+class SynchronizedProperty(Synchronizable):
+    def __init__(self, getter, setter=None, deleter=None, **kwargs):
+        super(SynchronizedProperty, self).__init__(**kwargs)
+        self._getter = getter
+        self._setter = None
+        self._deleter = None
+
+    def __get__(self, instance, owner):
+        return self._getter(instance) if instance is not None else self
+
     def __set__(self, instance, value):
         if self._setter is None:
             raise AttributeError("Can't set attribute")
-        newValue = self.mapValue(self._setter(instance, value))
-        update = functools.partial(self.update, (self, instance), newValue)
-        iterutils.consume(map(update, self._sync.iterSubscriptions(self, instance)), None)
+        self.broadcast(instance, self._setter(instance, value))
 
     def __delete__(self, instance):
         # deletion should do a setting to a default value
@@ -71,3 +81,6 @@ class SynchronizedProperty(object):
 class ObjectProperty(SynchronizedProperty):
     def mapValue(self, value):
         return value.ID
+
+    def unmapValue(self, value):
+        raise NotImplementedError("Cannot lookup ID.")
