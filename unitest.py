@@ -69,6 +69,8 @@ import textwrap
 import itertools
 import platform
 import time
+if platform.python_implementation() == "pypy":
+    import numpypy
 
 STATE_PASS = 0
 STATE_SKIP = 1
