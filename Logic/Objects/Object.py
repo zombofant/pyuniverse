@@ -29,7 +29,7 @@ Base for all game objects and the default object types
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Logic.Synchronization.Service import SyncClass
+from Engine.Synchronization.Service import SyncClass
 
 class Object(object):
     """

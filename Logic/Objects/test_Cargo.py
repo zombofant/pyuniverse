@@ -27,7 +27,7 @@ from our_future import *
 
 import unittest
 
-import Logic.Synchronization.TestLocal
+import Engine.Synchronization.TestLocal
 
 from Cargo import Cargo, QuotaCargo
 from Object import TradableObject
