@@ -1,96 +1,63 @@
+# File name: Tuples.py
+# This file is part of: pyuni
+#
+# LICENSE
+#
+# The contents of this file are subject to the Mozilla Public License
+# Version 1.1 (the "License"); you may not use this file except in
+# compliance with the License. You may obtain a copy of the License at
+# http://www.mozilla.org/MPL/
+#
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+# the License for the specific language governing rights and limitations
+# under the License.
+#
+# Alternatively, the contents of this file may be used under the terms
+# of the GNU General Public license (the  "GPL License"), in which case
+# the provisions of GPL License are applicable instead of those above.
+#
+# FEEDBACK & QUESTIONS
+#
+# For feedback and questions about pyuni please e-mail one of the
+# authors named in the AUTHORS file.
+########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import numpy as np
+import functools
+import iterutils
 
-class NPManager(object):
-    """
-    Manages a numpy storage for XVA values.
+from Service import Synchronizable
 
-    Uses a large numpy array to enable any logic to update all XVA
-    (Position, Velocity, Acceleration) values at once.
-    """
-    
-    def __init__(self, initialArraySize, updateFrameSize, **kwargs):
-        super(NPManager, self).__init__(**kwargs)
-        self._rawData = np.zeros((3, initialArraySize))
-        self.Data = self._rawData.T
-        self._freeRows = set(range(0, initialArraySize))
-        self.UpdateFrameSize = updateFrameSize
+class XVAObject(Synchronizable):
+    def __init__(self, npManager, prop=None, **kwargs):
+        super(XVAObject, self).__init__(**kwargs)
+        self._npManager = npManager
+        self._prop = prop
+        self._token = None
 
-    @property
-    def UpdateFrameSize(self):
-        return self._updateFrameSize
+    def setInstance(self, instance):
+        self._token = (self._prop, instance)
 
-    @UpdateFrameSize.setter
-    def UpdateFrameSize(self, value):
-        self._updateFrameSize = float(value)
-        self._updateMatrix = np.array([
-            [1, value, 0.5*value*value],
-            [0,     1,           value],
-            [0,     0,               1]
-        ])
+    def broadcast(self, value):
+        token = self._token
+        if token is None:
+            return
+        update = functools.partial(self.update, token, value)
+        iterutils.consume(map(update, self._sync.iterSubscriptions(*token)), None)
 
-    def _expand(self):
-        oldData = self.Data
-        oldLen = len(oldData)
-        self.Data = np.zeros((oldLen*2,3))
-        self.Data[0:oldLen,:] = oldData
-
-    def _getFreeRow(self):
-        try:
-            return self._freeRows.pop()
-        except KeyError:
-            self._expand()
-            return self.allocateXVAValue()
-
-    def allocateXVAValue(self):
-        """
-        Allocates one row of the numpy storage for an XVA value. This
-        may expand the array, so is potentially a costly operation.
-        """
-        index = self._getFreeRow()
-        self.Data[index] = (0, 0, 0)
-        return index
-
-    def deallocateXVAValue(self, index):
-        assert not index in self._freeRows
-        self._freeRows.add(index)
-
-    def allocateXVAVector(self):
-        """
-        Allocates three rows of numpy storage for a XVA vector. This may
-        expand the array, so is potentially a costly operation.
-        """
-        indicies = [self._getFreeRow(), self._getFreeRow(), self._getFreeRow()]
-        for index in indicies:
-            self.Data[index] = (0, 0, 0)
-        return indicies
-
-    def deallocateXVAVector(self, vecIndicies):
-        assert len(vecIndicies) == 3
-        self._freeRows.update(vecIndicies)
-
-    def update(self):
-        """
-        Advances the simulation by a step of length *UpdateFrameSize*.
-        """
-        self._rawData = np.dot(self._updateMatrix, self._rawData)
-        self.Data = self._rawData.T
-
-    @property
-    def FreeTuples(self):
-        return len(self._freeRows)
-
-class XVAValue(object):
+class XVAValue(XVAObject):
     """
     Makes a row in the NPManager accessible as a Tuple or individual
     values.
     """
     
-    def __init__(self, npManager, **kwargs):
-        self._npManager = npManager
+    def __init__(self, npManager, prop=None, **kwargs):
+        super(XVAValue, self).__init__(npManager, prop, **kwargs)
         self._rowIndex = npManager.allocateXVAValue()
+        self._prop = prop
 
     def __del__(self):
         self._npManager.deallocateXVAValue(self._rowIndex)
@@ -103,6 +70,7 @@ class XVAValue(object):
     def Tuple(self, value):
         assert len(value) == 3
         self._npManager.Data[self._rowIndex] = value
+        self.broadcast(self.Tuple)
 
     @property
     def Position(self):
@@ -111,6 +79,7 @@ class XVAValue(object):
     @Position.setter
     def Position(self, value):
         self._npManager.Data[self._rowIndex,0] = value
+        self.broadcast(self.Tuple)
 
     @property
     def Velocity(self):
@@ -119,6 +88,7 @@ class XVAValue(object):
     @Velocity.setter
     def Velocity(self, value):
         self._npManager.Data[self._rowIndex,1] = value
+        self.broadcast(self.Tuple)
         
     @property
     def Acceleration(self):
@@ -127,20 +97,25 @@ class XVAValue(object):
     @Acceleration.setter
     def Acceleration(self, value):
         self._npManager.Data[self._rowIndex,2] = value
+        self.broadcast(self.Tuple)
 
 
-class XVAVector(object):
+class XVAVector(XVAObject):
     """
     Makes a vector in the NPManager accessible as individual vectors for
     position, velocity and acceleration.
     """
     
-    def __init__(self, npManager, **kwargs):
-        self._npManager = npManager
+    def __init__(self, npManager, prop=None, **kwargs):
+        super(XVAVector, self).__init__(npManager, prop, **kwargs)
         self._rowIndicies = npManager.allocateXVAVector()
 
     def __del__(self):
         self._npManager.deallocateXVAVector(self._rowIndicies)
+
+    @property
+    def Tuple(self):
+        return (self.Position, self.Velocity, self.Acceleration)
 
     @property
     def Position(self):
@@ -155,6 +130,7 @@ class XVAVector(object):
         data[indicies[0],0] = value[0]
         data[indicies[1],0] = value[1]
         data[indicies[2],0] = value[2]
+        self.broadcast(self.Tuple)
 
     @property
     def Velocity(self):
@@ -169,6 +145,7 @@ class XVAVector(object):
         data[indicies[0],1] = value[0]
         data[indicies[1],1] = value[1]
         data[indicies[2],1] = value[2]
+        self.broadcast(self.Tuple)
         
     @property
     def Acceleration(self):
@@ -183,3 +160,4 @@ class XVAVector(object):
         data[indicies[0],2] = value[0]
         data[indicies[1],2] = value[1]
         data[indicies[2],2] = value[2]
+        self.broadcast(self.Tuple)

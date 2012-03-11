@@ -25,8 +25,11 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import functools
+import iterutils
 import weakref
 
+from NPManager import NPManager
 from IDManagement import IDManager, MasterIDManager, LocalIDManager
 
 class Synchronization(object):
@@ -54,6 +57,15 @@ class Synchronization(object):
             self._clients = set()
             self._properties = weakref.WeakKeyDictionary()
             self._idManager = self.createIDManager()
+            self.NPManager = NPManager(1024, 0.)
+
+    @property
+    def UpdateFrameSize(self):
+        return self.NPManager.UpdateFrameSize
+
+    @UpdateFrameSize.setter
+    def UpdateFrameSize(self, value):
+        self.NPManager.UpdateFrameSize = value
 
     def addClient(self, client):
         self._clients.add(client)
@@ -79,6 +91,26 @@ class Synchronization(object):
 
     def createIDManager(self):
         return IDManager()
+
+
+class Synchronizable(object):
+    def __init__(self, **kwargs):
+        super(Synchronizable, self).__init__(**kwargs)
+        self._sync = SyncClass()
+    
+    def update(self, prop_instance, newValue, client):
+        client.update(prop_instance, newValue)
+
+    def mapValue(self, value):
+        return value
+
+    def unmapValue(self, value):
+        return value
+
+    def broadcast(self, instance, value):
+        value = self.mapValue(value)
+        update = functools.partial(self.update, (self, instance), value)
+        iterutils.consume(map(update, self._sync.iterSubscriptions(self, instance)), None)
 
 
 SyncClass = Synchronization

@@ -25,29 +25,9 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Service import SyncClass
+import weakref
 
-import functools
-import iterutils
-
-class Synchronizable(object):
-    def __init__(self, **kwargs):
-        super(Synchronizable, self).__init__(**kwargs)
-        self._sync = SyncClass()
-    
-    def update(self, prop_instance, newValue, client):
-        client.update(prop_instance, newValue)
-
-    def mapValue(self, value):
-        return value
-
-    def unmapValue(self, value):
-        return value
-
-    def broadcast(self, instance, value):
-        value = self.mapValue(value)
-        update = functools.partial(self.update, (self, instance), value)
-        iterutils.consume(map(update, self._sync.iterSubscriptions(self, instance)), None)
+from Service import SyncClass, Synchronizable
 
 class SynchronizedProperty(Synchronizable):
     def __init__(self, getter, setter=None, deleter=None, **kwargs):
@@ -84,3 +64,31 @@ class ObjectProperty(SynchronizedProperty):
 
     def unmapValue(self, value):
         raise NotImplementedError("Cannot lookup ID.")
+
+
+class XVAProperty(object):
+    def __init__(self, npManager, XVAClass, **kwargs):
+        super(XVAProperty, self).__init__(**kwargs)
+        # The __get__ code relies on the WeakKeyDictionary behaviour if
+        # an attempt to __getitem__ with None is made. If one decides to
+        # switch the type of the dict, please make sure that the None
+        # check still passes.
+        self._instanceDict = weakref.WeakKeyDictionary()
+        self._npManager = npManager
+        self._xvaClass = XVAClass
+
+    def __get__(self, instance, owner):
+        try:
+            return self._instanceDict[instance]
+        except KeyError:
+            obj = self._xvaClass(self._npManager, prop=self)
+            obj.setInstance(instance)
+            self._instanceDict[instance] = obj
+            return obj
+        except TypeError:
+            # TypeError gets raised if the WeakKeyDictionary is unable
+            # to weakref a value. So we use this as a cheap check.
+            if instance is None:
+                return self
+            else:
+                raise
