@@ -25,7 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Synchronization import SyncClass
+from Service import SyncClass
 
 class Client(object):
     def __init__(self, **kwargs):
@@ -38,8 +38,8 @@ class Client(object):
         return iter(self.Subscriptions)
 
     def subscribe(self, prop, instance):
-        assert isinstance(prop, SynchronizedProperty)
         self.Subscriptions.add((prop, instance))
+        self._sync.addSubscription(prop, instance, self)
 
     def unsubscribe(self, prop, instance):
         t = (prop, instance)
@@ -52,3 +52,8 @@ class Client(object):
     def update(self, prop_instance, value):
         assert prop_instance in self.Subscriptions
         self._updates[prop_instance] = value
+
+    def flushFrame(self):
+        updates = self._updates
+        self._updates = {}
+        return updates

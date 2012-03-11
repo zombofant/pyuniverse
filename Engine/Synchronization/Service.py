@@ -25,6 +25,8 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import weakref
+
 from IDManagement import IDManager, MasterIDManager, LocalIDManager
 
 class Synchronization(object):
@@ -50,7 +52,7 @@ class Synchronization(object):
             super(Synchronization, self).__init__(**kwargs)
             self._initialized = True
             self._clients = set()
-            self._properties = {}
+            self._properties = weakref.WeakKeyDictionary()
             self._idManager = self.createIDManager()
 
     def addClient(self, client):
@@ -64,13 +66,13 @@ class Synchronization(object):
         self._clients.remove(client)
 
     def addSubscription(self, property, instance, client):
-        self._properties[property].setdefault(instance, set()).add(client)
+        self._properties.setdefault(property, {}).setdefault(instance, set()).add(client)
 
     def removeSubscription(self, property, instance, client):
-        self._properties[property].get(instance, set()).remove(client)
+        self._properties.setdefault(property, {}).get(instance, set()).remove(client)
 
     def iterSubscriptions(self, property, instance):
-        return iter(self._properties[property].get(instance, ()))
+        return iter(self._properties.setdefault(property, {}).get(instance, ()))
 
     def getUniqueID(self):
         return self._idManager.allocateOne()

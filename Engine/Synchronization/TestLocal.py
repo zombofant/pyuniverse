@@ -25,5 +25,19 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import unittest
+
 import Service
 Service.SyncClass = Service.SyncMasterServer
+import Client
+
+class SyncTestCase(unittest.TestCase):
+    def setUp(self):
+        self._sync = Service.SyncClass()
+        self.client = Client.Client()
+        self._sync.addClient(self.client)
+
+    def tearDown(self):
+        self._sync.deleteClient(self.client)
+        del self.client
+        del self._sync

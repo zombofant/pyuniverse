@@ -25,9 +25,10 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Synchronization import SyncClass
+from Service import SyncClass
 
 import functools
+import iterutils
 
 class SynchronizedProperty(object):
     def __init__(self, getter, setter=None, deleter=None):
@@ -50,8 +51,8 @@ class SynchronizedProperty(object):
         if self._setter is None:
             raise AttributeError("Can't set attribute")
         newValue = self.mapValue(self._setter(instance, value))
-        update = functools.partial(self.update, (prop, instance), newValue)
-        map(update, self._sync.iterSubscriptions(self, instance))
+        update = functools.partial(self.update, (self, instance), newValue)
+        iterutils.consume(map(update, self._sync.iterSubscriptions(self, instance)), None)
 
     def __delete__(self, instance):
         # deletion should do a setting to a default value
@@ -65,6 +66,7 @@ class SynchronizedProperty(object):
     def deleter(self, deleter):
         self._deleter = deleter
         return self
+
 
 class ObjectProperty(SynchronizedProperty):
     def mapValue(self, value):

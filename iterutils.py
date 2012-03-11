@@ -26,8 +26,9 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import itertools
+import collections
 
-__all__ = ["interleave"]
+__all__ = ["interleave", "flattenTwoLevels", "yieldCount", "consume"]
 
 def interleave(*iterators):
     """
@@ -43,7 +44,8 @@ def interleave(*iterators):
     while True:
         for iterator in iters:
             yield next(iterator)
-    
+
+
 def flattenTwoLevels(iterable):
     """
     Flattens a two times nested iterable.
@@ -51,6 +53,7 @@ def flattenTwoLevels(iterable):
     [[[0, 1], [2, 3]], [[4, 5], [6, 7]], ...] => [0, 1, 2, 3, 4, 5, 6, 7, ...]
     """
     return itertools.chain.from_iterable(map(itertools.chain.from_iterable, iterable))
+
 
 def yieldCount(iterable, storeTo):
     """
@@ -62,3 +65,15 @@ def yieldCount(iterable, storeTo):
         count += 1
         yield item
     storeTo.len = count
+
+
+# From: <http://docs.python.org/library/itertools.html#recipes>
+def consume(iterator, n):
+    "Advance the iterator n-steps ahead. If n is none, consume entirely."
+    # Use functions that consume iterators at C speed.
+    if n is None:
+        # feed the entire iterator into a zero-length deque
+        collections.deque(iterator, maxlen=0)
+    else:
+        # advance to the empty slice starting at position n
+        next(islice(iterator, n, n), None)
