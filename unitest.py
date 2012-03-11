@@ -69,7 +69,7 @@ import textwrap
 import itertools
 import platform
 import time
-if platform.python_implementation() == "pypy":
+if platform.python_implementation() == "PyPy":
     import numpypy
 
 STATE_PASS = 0

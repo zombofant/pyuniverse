@@ -4,6 +4,13 @@ from our_future import *
 import numpy as np
 
 class NPManager(object):
+    """
+    Manages a numpy storage for XVA values.
+
+    Uses a large numpy array to enable any logic to update all XVA
+    (Position, Velocity, Acceleration) values at once.
+    """
+    
     def __init__(self, initialArraySize, updateFrameSize, **kwargs):
         super(NPManager, self).__init__(**kwargs)
         self._rawData = np.zeros((3, initialArraySize))
@@ -38,6 +45,10 @@ class NPManager(object):
             return self.allocateXVAValue()
 
     def allocateXVAValue(self):
+        """
+        Allocates one row of the numpy storage for an XVA value. This
+        may expand the array, so is potentially a costly operation.
+        """
         index = self._getFreeRow()
         self.Data[index] = (0, 0, 0)
         return index
@@ -47,23 +58,42 @@ class NPManager(object):
         self._freeRows.add(index)
 
     def allocateXVAVector(self):
+        """
+        Allocates three rows of numpy storage for a XVA vector. This may
+        expand the array, so is potentially a costly operation.
+        """
         indicies = [self._getFreeRow(), self._getFreeRow(), self._getFreeRow()]
         for index in indicies:
             self.Data[index] = (0, 0, 0)
         return indicies
 
     def deallocateXVAVector(self, vecIndicies):
-        assert len(vecIndicies) != 3
+        assert len(vecIndicies) == 3
         self._freeRows.update(vecIndicies)
 
     def update(self):
+        """
+        Advances the simulation by a step of length *UpdateFrameSize*.
+        """
         self._rawData = np.dot(self._updateMatrix, self._rawData)
         self.Data = self._rawData.T
 
+    @property
+    def FreeTuples(self):
+        return len(self._freeRows)
+
 class XVAValue(object):
+    """
+    Makes a row in the NPManager accessible as a Tuple or individual
+    values.
+    """
+    
     def __init__(self, npManager, **kwargs):
         self._npManager = npManager
         self._rowIndex = npManager.allocateXVAValue()
+
+    def __del__(self):
+        self._npManager.deallocateXVAValue(self._rowIndex)
 
     @property
     def Tuple(self):
@@ -100,9 +130,17 @@ class XVAValue(object):
 
 
 class XVAVector(object):
+    """
+    Makes a vector in the NPManager accessible as individual vectors for
+    position, velocity and acceleration.
+    """
+    
     def __init__(self, npManager, **kwargs):
         self._npManager = npManager
         self._rowIndicies = npManager.allocateXVAVector()
+
+    def __del__(self):
+        self._npManager.deallocateXVAVector(self._rowIndicies)
 
     @property
     def Position(self):
