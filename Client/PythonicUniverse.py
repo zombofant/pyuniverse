@@ -25,11 +25,11 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import cuni
+
 import StringIO
 from OpenGL.GL import *
 import math
-import pyglet
-import pyglet.window.key as key
 import os
 import sys
 import numpy as np
@@ -155,8 +155,7 @@ class PythonicUniverse(Application):
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.ESCAPE:
-            # FIXME: make this without an pyglet.app reference
-            pyglet.app.exit()
+            cuni.exit()
 
     def render(self):
         super(PythonicUniverse, self).render()
