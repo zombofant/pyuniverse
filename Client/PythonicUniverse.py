@@ -34,7 +34,7 @@ import os
 import sys
 import numpy as np
 
-from Engine.Application import Window, Application
+from Engine.Application import Application
 from Engine.UI import SceneWidget, VBox, HBox, LabelWidget, WindowWidget
 from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
 from Engine.VFS.Mounts import MountDirectory
@@ -96,8 +96,8 @@ class Scene(SceneWidget):
         # print(timeDelta)
 
 class PythonicUniverse(Application):
-    def __init__(self, mountCWDData=True, **kwargs):
-        super(PythonicUniverse, self).__init__(**kwargs)
+    def __init__(self, display, mountCWDData=True, **kwargs):
+        super(PythonicUniverse, self).__init__(display, **kwargs)
         vfs = XDGFileSystem('pyuniverse')
         if mountCWDData:
             vfs.mount('/data', MountDirectory(os.path.join(os.getcwd(), "data")), MountPriority.FileSystem)
