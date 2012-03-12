@@ -108,8 +108,9 @@ class PythonicUniverse(Application):
         self.theme.addRules(ResourceManager().require("ui.css"))
 
         mainScreen = self._primaryWidget
-        scene = Scene(mainScreen)
-        self.addSceneWidget(scene)
+
+        #scene = Scene(mainScreen)
+        #self.addSceneWidget(scene)
 
         window = WindowWidget(self._windowLayer)
         window.Title.Text = "Test"
