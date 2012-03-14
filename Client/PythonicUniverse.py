@@ -26,6 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import CUni
+import CUni.GL as CGL
 
 import StringIO
 from OpenGL.GL import *
@@ -147,6 +148,21 @@ class PythonicUniverse(Application):
         self._shaders.append(self._shader.bind(texturing=False, upsideDown=False))
 
         Shader.unbind()
+        
+        vf = CGL.VertexFormat(3, 4, 0, 0, 0, 0, False, 0, 0, 0, 0)
+        buffer = CGL.GeometryBuffer(vf, GL_DYNAMIC_DRAW)
+        alloc = buffer.allocateVertices(3)
+        view = CGL.GeometryBufferView(buffer, vf, alloc)
+        vertices = view.vertices();
+        print(vertices.getSize())
+        print(vertices.getLength())
+        l = [
+                0., 0., 0.,
+                0., 0., 0.,
+                0., 0., 0.
+            ]
+        vertices[:].set(l)
+        print(vertices[:].get())
 
     def _setUIOffset(self, x, y):
         xy = np.asarray([x, y], dtype=np.float32)
