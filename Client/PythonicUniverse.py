@@ -196,7 +196,6 @@ class PythonicUniverse(Application):
         window = self._screens[0][0]
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
-        glEnable(GL_MULTISAMPLE)
 
         glBegin(GL_TRIANGLES)
         glVertex2f(-1.0, -1.0)
