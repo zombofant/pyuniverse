@@ -149,12 +149,16 @@ class PythonicUniverse(Application):
 
         Shader.unbind()
         
-        vf = CGL.VertexFormat(3, 4, 0, 0, 0, 0, False, 0, 0, 0, 0)
+        vf = CGL.VertexFormat("v:3;c:4")
         buffer = CGL.GeometryBuffer(vf, GL_DYNAMIC_DRAW)
         alloc = buffer.allocateVertices(3)
         view = CGL.GeometryBufferView(buffer, vf, alloc)
         view.vertex[0:3].set([
-            0., 0., 0.,
+            1., 2., 3.,
+            4., 5., 6.,
+            7., 8., 9.
+        ])
+        view.vertex[0:3:2].set([
             0., 0., 0.,
             0., 0., 0.
         ])
@@ -163,6 +167,14 @@ class PythonicUniverse(Application):
             0., 1., 0., 1.,
             0., 0., 1., 1.
         ])
+        view.vertex[:,0].set([1., 1., 1.])
+        view.vertex[:,1:2].set(
+            [
+                2., 3.,
+                4., 2.,
+                2., 1.,
+            ]
+        )
         print(view.vertex[:].get())
         print(view.colour[:].get())
 
