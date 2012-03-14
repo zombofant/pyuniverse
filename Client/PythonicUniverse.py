@@ -161,3 +161,16 @@ class PythonicUniverse(Application):
     def render(self):
         super(PythonicUniverse, self).render()
         Shader.unbind()
+
+    def frameUnsynced(self, deltaT):
+        window = self._screens[0][0]
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glLoadIdentity()
+        glEnable(GL_MULTISAMPLE)
+
+        glBegin(GL_TRIANGLES)
+        glVertex2f(-1.0, -1.0)
+        glVertex2f(1.0, 0.5)
+        glVertex2f(0.5, -1.0)
+        glEnd()
+        window.flip()
