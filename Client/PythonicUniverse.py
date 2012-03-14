@@ -153,16 +153,18 @@ class PythonicUniverse(Application):
         buffer = CGL.GeometryBuffer(vf, GL_DYNAMIC_DRAW)
         alloc = buffer.allocateVertices(3)
         view = CGL.GeometryBufferView(buffer, vf, alloc)
-        vertices = view.vertices();
-        print(vertices.getSize())
-        print(vertices.getLength())
-        l = [
-                0., 0., 0.,
-                0., 0., 0.,
-                0., 0., 0.
-            ]
-        vertices[:].set(l)
-        print(vertices[:].get())
+        view.vertex[0:3].set([
+            0., 0., 0.,
+            0., 0., 0.,
+            0., 0., 0.
+        ])
+        view.colour[0:3].set([
+            1., 0., 0., 1.,
+            0., 1., 0., 1.,
+            0., 0., 1., 1.
+        ])
+        print(view.vertex[:].get())
+        print(view.colour[:].get())
 
     def _setUIOffset(self, x, y):
         xy = np.asarray([x, y], dtype=np.float32)
