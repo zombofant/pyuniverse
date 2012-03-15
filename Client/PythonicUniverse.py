@@ -32,9 +32,10 @@ import pyglet
 import pyglet.window.key as key
 import os
 import sys
+import numpy as np
 
 from Engine.Application import Window, Application
-from Engine.UI import SceneWidget, VBox, HBox
+from Engine.UI import SceneWidget, VBox, HBox, LabelWidget, WindowWidget
 from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
 from Engine.VFS.Mounts import MountDirectory
 from Engine.Resources.Manager import ResourceManager
@@ -42,7 +43,10 @@ import Engine.Resources.TextureLoader
 import Engine.Resources.ModelLoader
 import Engine.Resources.CSSLoader
 import Engine.Resources.MaterialLoader
+import Engine.Resources.ShaderLoader
+from Engine.GL.Shader import Shader
 from Engine.GL.RenderModel import RenderModel
+from Engine.GL.SceneGraph.Core import SceneGraph, Node
 from Engine.UI.Theme import Theme
 
 class Scene(SceneWidget):
@@ -50,27 +54,45 @@ class Scene(SceneWidget):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
         self.rotZ = 0.
-        self._testModel = ResourceManager().require('die.obj', RenderModel)
-    
+        self._frameN = 0
+        self._frameT = 0
+        self._sceneGraph = SceneGraph()
+        self._testModel = ResourceManager().require('spaceship.obj', RenderModel)
+        self._node = Node() #rotationsnode 
+        self._sceneGraph.rootNode.addChild(self._node)
+        transNode = Node()
+        transNode.addChild(self._testModel)
+        transNode.LocalTransformation.translate([0.,0.,-12.])
+        transNode.LocalTransformation.scale([0.3,0.3,0.3])
+        self._node.addChild(transNode)
+ 
     def renderScene(self):
+        if self._frameT >= 5:
+            print('%i Frames/s' % (self._frameN // 5))
+            self._frameN = 0
+            self._frameT -= 5
         self._setupProjection()
         glEnable(GL_CULL_FACE)
+        glEnable(GL_DEPTH_TEST)
         glEnable(GL_TEXTURE_2D)
-        glTranslatef(0.0, 0.0, -5.0)
-        glRotatef(self.rotX, 1.0, 0.0, 0.0)
-        glRotatef(self.rotZ, 0.0, 0.0, 1.0)
-        glColor4f(1.0, 1.0, 1.0, 1.0)
-        glScalef(0.35,0.35,0.35)
-        self._testModel.draw()
-        glLoadIdentity()
+        glPushMatrix()
+        self._node.LocalTransformation.rotate(self.rotX, [1., 0.,0.])
+        self._node.LocalTransformation.rotate(self.rotZ, [0., 0.,1.])
+        self._sceneGraph.update(0)
+        self._sceneGraph.renderScene()
+        self._node.LocalTransformation.reset()
         self._resetProjection()
+        glPopMatrix()
+        glDisable(GL_DEPTH_TEST)
         glDisable(GL_CULL_FACE)
+        self._frameN += 1
 
     def update(self, timeDelta):
-        self.rotX += timeDelta * 30.0
-        self.rotZ += timeDelta * 45.0
-        self.rotX -= (self.rotX // 360) * 360
+        self.rotX += timeDelta * 5.
+        self.rotZ += timeDelta * 10.
+        self.rotX -= (self.rotX // 360 ) * 360
         self.rotZ -= (self.rotZ // 360) * 360
+        self._frameT += timeDelta
         # print(timeDelta)
 
 class PythonicUniverse(Application):
@@ -85,24 +107,57 @@ class PythonicUniverse(Application):
         self.theme = Theme()
         self.theme.addRules(ResourceManager().require("ui.css"))
 
-        mainScreen = self.windows[0][1]
-
+        mainScreen = self._primaryWidget
         scene = Scene(mainScreen)
         self.addSceneWidget(scene)
 
-        vbox = VBox(mainScreen)
-        hbox1 = HBox(vbox)
-        hbox1.StyleClasses.add("test")
-        hbox2 = HBox(vbox)
-        vbox21 = VBox(hbox2)
-        vbox21.StyleClasses.add("test")
-        vbox22 = VBox(hbox2)
+        window = WindowWidget(self._windowLayer)
+        window.Title.Text = "Test"
         
         self.theme.applyStyles(self)
+
+        self._shader = ResourceManager().require("/data/shaders/ui.shader")
+        self._upsideDownHelper = np.asarray([-1.0, self.AbsoluteRect.Height], dtype=np.float32)
+        self._shader.cacheShaders([
+            {
+                "texturing": True,
+                "upsideDown": True
+            },
+            {
+                "texturing": True,
+                "upsideDown": False
+            },
+            {
+                "texturing": False,
+                "upsideDown": False
+            },
+        ])
+        shader = self._shader.bind(texturing=True, upsideDown=False)
+        self._shaders = [shader]
+        shader.bind()
+        glUniform1i(shader["texture"], 0)
         
+        shader = self._shader.bind(texturing=True, upsideDown=True)
+        self._shaders.append(shader)
+        shader.bind()
+        glUniform1i(shader["texture"], 0)
+        glUniform2fv(shader["upsideDownHelper"], 1, self._upsideDownHelper)
+
+        self._shaders.append(self._shader.bind(texturing=False, upsideDown=False))
+
+        Shader.unbind()
+
+    def _setUIOffset(self, x, y):
+        xy = np.asarray([x, y], dtype=np.float32)
+        for shader in self._shaders:
+            shader.bind()
+            glUniform2fv(shader["uiOffset"], 1, xy)
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.ESCAPE:
             # FIXME: make this without an pyglet.app reference
             pyglet.app.exit()
 
+    def render(self):
+        super(PythonicUniverse, self).render()
+        Shader.unbind()
