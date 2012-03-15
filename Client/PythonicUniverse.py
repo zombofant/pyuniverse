@@ -27,6 +27,7 @@ from our_future import *
 
 import CUni
 import CUni.GL as CGL
+import CUni.SceneGraph as CSceneGraph
 
 import StringIO
 from OpenGL.GL import *
@@ -49,6 +50,7 @@ from Engine.GL.Shader import Shader
 from Engine.GL.RenderModel import RenderModel
 from Engine.GL.SceneGraph.Core import SceneGraph, Node
 from Engine.UI.Theme import Theme
+import Engine.GL.Base as GL
 
 class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
@@ -95,6 +97,15 @@ class Scene(SceneWidget):
         self.rotZ -= (self.rotZ // 360) * 360
         self._frameT += timeDelta
         # print(timeDelta)
+
+class LeafTest(CSceneGraph.Leaf):
+    def __init__(self):
+        super(LeafTest, self).__init__()
+
+class MatTest(CGL.Class):
+    def __init__(self):
+        super(MatTest, self).__init__()
+        self.StateGroup = CGL.StateGroup(self, 0)
 
 class PythonicUniverse(Application):
     def __init__(self, display, mountCWDData=True, **kwargs):
@@ -152,31 +163,14 @@ class PythonicUniverse(Application):
         vf = CGL.VertexFormat("v:3;c:4")
         buffer = CGL.GeometryBuffer(vf, GL_DYNAMIC_DRAW)
         alloc = buffer.allocateVertices(3)
-        view = CGL.GeometryBufferView(buffer, alloc)
-        view.Vertex[0:3].set([
-            1., 2., 3.,
-            4., 5., 6.,
-            7., 8., 9.
-        ])
-        view.Vertex[0:3:2].set([
-            0., 0., 0.,
-            0., 0., 0.
-        ])
-        view.Colour[0:3].set([
-            1., 0., 0., 1.,
-            0., 1., 0., 1.,
-            0., 0., 1., 1.
-        ])
-        view.Vertex[:,0].set([1., 1., 1.])
-        view.Vertex[:,1:2].set(
-            [
-                2., 3.,
-                4., 2.,
-                2., 1.,
-            ]
-        )
-        print(view.Vertex.get())
-        print(view.Colour.get())
+
+        l = LeafTest()
+        mat = MatTest()
+        l.VertexMap[mat.StateGroup] = alloc
+        print(list(l.VertexMap.iterkeys()))
+        print(list(l.VertexMap.itervalues()))
+        print(list(l.VertexMap.iteritems()))
+        
 
     def _setUIOffset(self, x, y):
         xy = np.asarray([x, y], dtype=np.float32)
