@@ -41,7 +41,7 @@ from Engine.UI import SceneWidget, VBox, HBox, LabelWidget, WindowWidget
 from Engine.VFS.FileSystem import XDGFileSystem, MountPriority
 from Engine.VFS.Mounts import MountDirectory
 from Engine.Resources.Manager import ResourceManager
-import Engine.Resources.TextureLoader
+import Engine.Resources.PNGTextureLoader
 import Engine.Resources.ModelLoader
 import Engine.Resources.CSSLoader
 import Engine.Resources.MaterialLoader
@@ -170,7 +170,14 @@ class PythonicUniverse(Application):
         print(list(l.VertexMap.iterkeys()))
         print(list(l.VertexMap.itervalues()))
         print(list(l.VertexMap.iteritems()))
-        
+
+        self._testTex = ResourceManager().require("/data/ui/window.png")
+        assert self._testTex is not None
+        self._testTex.bind()
+        self._testTex[GL_TEXTURE_MAG_FILTER] = GL_LINEAR
+        self._testTex[GL_TEXTURE_MIN_FILTER] = GL_LINEAR
+        self._testTex.unbind();
+        # self._testTex[GL_GENERATE_MIPMAPS] = GL_TRUE
 
     def _setUIOffset(self, x, y):
         xy = np.asarray([x, y], dtype=np.float32)
@@ -191,9 +198,22 @@ class PythonicUniverse(Application):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
 
-        glBegin(GL_TRIANGLES)
-        glVertex2f(-1.0, -1.0)
-        glVertex2f(1.0, 0.5)
-        glVertex2f(0.5, -1.0)
+        glEnable(GL_TEXTURE_2D)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        self._testTex.bind()
+        glBegin(GL_QUADS)
+        #glVertex2f(-1.0, -1.0)
+        #glVertex2f(1.0, 0.5)
+        #glVertex2f(0.5, -1.0)
+        glTexCoord2f(0., 0.)
+        glVertex2f(-0.5, -0.6)
+        glTexCoord2f(0., 1.)
+        glVertex2f(-0.5,  0.6)
+        glTexCoord2f(1., 1.)
+        glVertex2f( 0.5,  0.4)
+        glTexCoord2f(1., 0.)
+        glVertex2f( 0.5, -0.4)
         glEnd()
+        self._testTex.unbind();
         window.flip()
