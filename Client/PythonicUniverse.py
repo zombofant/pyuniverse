@@ -146,41 +146,44 @@ class PythonicUniverse(Application):
                 "upsideDown": False
             },
         ])
-        shader = self._shader.bind(texturing=True, upsideDown=False)
-        self._shaders = [shader]
-        shader.bind()
-        glUniform1i(shader["texture"], 0)
-        
-        shader = self._shader.bind(texturing=True, upsideDown=True)
-        self._shaders.append(shader)
-        shader.bind()
-        glUniform1i(shader["texture"], 0)
-        glUniform2fv(shader["upsideDownHelper"], 1, self._upsideDownHelper)
+        shader = self._shader.bind(texturing=False)
 
-        self._shaders.append(self._shader.bind(texturing=False, upsideDown=False))
+        #self._shaders.append(self._shader.bind(texturing=False))
+        shader = self._shader.bind(texturing=True)
+        glUniform1i(shader["texture"], 0)
 
         Shader.unbind()
 
         testBuffer = CGL.GeometryBuffer(CGL.VertexFormat("v:4;c:3"), GL_DYNAMIC_DRAW)
-        testBuffer.bind()
-        testBuffer.unbind()
+        alloc0 = testBuffer.allocateVertices(1024)
+        alloc1 = testBuffer.allocateVertices(1024)
+        testBuffer.gc()
+        del alloc1
+        view = CGL.GeometryBufferView(testBuffer, alloc0)
+        del alloc0
+        testBuffer.gc()
+        view.Vertex[:3,0].set([0., 0., 0.])
+        testBuffer.gc()
+        del view
+        testBuffer.gc()
+        testBuffer.gc()
+        """testBuffer.gc()
         allocs0 = [testBuffer.allocateVertices(1024) for i in range(10)]
-        testBuffer.bind()
-        testBuffer.unbind()
+        testBuffer.gc()
         del allocs0[0]
         del allocs0[1]
-        testBuffer.bind()
-        testBuffer.unbind()
+        testBuffer.gc()
+        toview = allocs0[0]
+        view = CGL.GeometryBufferView(testBuffer, toview)
+        testBuffer.gc()
+        del view
         allocs1 = [testBuffer.allocateVertices(1024) for i in range(10)]
-        gc.collect()
-        gc.collect()
+        testBuffer.gc()
+        del allocs0
+        del allocs1
+        testBuffer.gc()
+        testBuffer.gc()"""
         # sys.exit(1)
-
-    def _setUIOffset(self, x, y):
-        xy = np.asarray([x, y], dtype=np.float32)
-        for shader in self._shaders:
-            shader.bind()
-            glUniform2fv(shader["uiOffset"], 1, xy)
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.ESCAPE:
@@ -188,8 +191,7 @@ class PythonicUniverse(Application):
 
     def render(self):
         self._geometryBuffer.bind()
-        GL.checkError()
-        self._shader.bind(texturing=True, upsideDown=True)
+        self._shader.bind(texturing=True, upsideDown=False)
         super(PythonicUniverse, self).render()
         Shader.unbind()
         self._geometryBuffer.unbind()
@@ -203,7 +205,9 @@ class PythonicUniverse(Application):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         r = self._primaryWidget.AbsoluteRect.XYWH
-        glOrtho(r[0], r[2], r[1], r[3], -1., 1.)
+        glOrtho(r[0], r[2], r[3], r[1], -1., 1.)
         glMatrixMode(GL_MODELVIEW)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         self.render()
         window.flip()
