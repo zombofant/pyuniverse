@@ -35,6 +35,7 @@ import math
 import os
 import sys
 import numpy as np
+import gc
 
 from Engine.Application import Application
 from Engine.UI import SceneWidget, VBox, HBox, LabelWidget, WindowWidget
@@ -145,75 +146,68 @@ class PythonicUniverse(Application):
                 "upsideDown": False
             },
         ])
-        shader = self._shader.bind(texturing=True, upsideDown=False)
-        self._shaders = [shader]
-        shader.bind()
-        glUniform1i(shader["texture"], 0)
-        
-        shader = self._shader.bind(texturing=True, upsideDown=True)
-        self._shaders.append(shader)
-        shader.bind()
-        glUniform1i(shader["texture"], 0)
-        glUniform2fv(shader["upsideDownHelper"], 1, self._upsideDownHelper)
+        shader = self._shader.bind(texturing=False)
 
-        self._shaders.append(self._shader.bind(texturing=False, upsideDown=False))
+        #self._shaders.append(self._shader.bind(texturing=False))
+        shader = self._shader.bind(texturing=True)
+        glUniform1i(shader["texture"], 0)
 
         Shader.unbind()
-        
-        vf = CGL.VertexFormat("v:3;c:4")
-        buffer = CGL.GeometryBuffer(vf, GL_DYNAMIC_DRAW)
-        alloc = buffer.allocateVertices(3)
 
-        l = LeafTest()
-        mat = MatTest()
-        l.VertexMap[mat.StateGroup] = alloc
-        print(list(l.VertexMap.iterkeys()))
-        print(list(l.VertexMap.itervalues()))
-        print(list(l.VertexMap.iteritems()))
-
-        self._testTex = ResourceManager().require("/data/ui/window.png")
-        assert self._testTex is not None
-        self._testTex.bind()
-        self._testTex[GL_TEXTURE_MAG_FILTER] = GL_LINEAR
-        self._testTex[GL_TEXTURE_MIN_FILTER] = GL_LINEAR
-        self._testTex.unbind();
-        # self._testTex[GL_GENERATE_MIPMAPS] = GL_TRUE
-
-    def _setUIOffset(self, x, y):
-        xy = np.asarray([x, y], dtype=np.float32)
-        for shader in self._shaders:
-            shader.bind()
-            glUniform2fv(shader["uiOffset"], 1, xy)
+        testBuffer = CGL.GeometryBuffer(CGL.VertexFormat("v:4;c:3"), GL_DYNAMIC_DRAW)
+        alloc0 = testBuffer.allocateVertices(1024)
+        alloc1 = testBuffer.allocateVertices(1024)
+        testBuffer.gc()
+        del alloc1
+        view = CGL.GeometryBufferView(testBuffer, alloc0)
+        del alloc0
+        testBuffer.gc()
+        view.Vertex[:3,0].set([0., 0., 0.])
+        testBuffer.gc()
+        del view
+        testBuffer.gc()
+        testBuffer.gc()
+        """testBuffer.gc()
+        allocs0 = [testBuffer.allocateVertices(1024) for i in range(10)]
+        testBuffer.gc()
+        del allocs0[0]
+        del allocs0[1]
+        testBuffer.gc()
+        toview = allocs0[0]
+        view = CGL.GeometryBufferView(testBuffer, toview)
+        testBuffer.gc()
+        del view
+        allocs1 = [testBuffer.allocateVertices(1024) for i in range(10)]
+        testBuffer.gc()
+        del allocs0
+        del allocs1
+        testBuffer.gc()
+        testBuffer.gc()"""
+        # sys.exit(1)
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.ESCAPE:
             cuni.exit()
 
     def render(self):
+        self._geometryBuffer.bind()
+        self._shader.bind(texturing=True, upsideDown=False)
         super(PythonicUniverse, self).render()
         Shader.unbind()
+        self._geometryBuffer.unbind()
 
     def frameUnsynced(self, deltaT):
         window = self._screens[0][0]
+        window.switchTo()
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
-
-        glEnable(GL_TEXTURE_2D)
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        r = self._primaryWidget.AbsoluteRect.XYWH
+        glOrtho(r[0], r[2], r[3], r[1], -1., 1.)
+        glMatrixMode(GL_MODELVIEW)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        self._testTex.bind()
-        glBegin(GL_QUADS)
-        #glVertex2f(-1.0, -1.0)
-        #glVertex2f(1.0, 0.5)
-        #glVertex2f(0.5, -1.0)
-        glTexCoord2f(0., 0.)
-        glVertex2f(-0.5, -0.6)
-        glTexCoord2f(0., 1.)
-        glVertex2f(-0.5,  0.6)
-        glTexCoord2f(1., 1.)
-        glVertex2f( 0.5,  0.4)
-        glTexCoord2f(1., 0.)
-        glVertex2f( 0.5, -0.4)
-        glEnd()
-        self._testTex.unbind();
+        self.render()
         window.flip()
