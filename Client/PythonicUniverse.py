@@ -28,6 +28,7 @@ from our_future import *
 import CUni
 import CUni.GL as CGL
 import CUni.SceneGraph as CSceneGraph
+import CUni.Window.key as key
 
 import StringIO
 from OpenGL.GL import *
@@ -62,14 +63,14 @@ class Scene(SceneWidget):
         self._frameT = 0
         self._sceneGraph = SceneGraph()
         self._testModel = ResourceManager().require('spaceship.obj', RenderModel)
-        self._node = Node() #rotationsnode 
+        self._node = Node() #rotationsnode
         self._sceneGraph.rootNode.addChild(self._node)
         transNode = Node()
         transNode.addChild(self._testModel)
         transNode.LocalTransformation.translate([0.,0.,-12.])
         transNode.LocalTransformation.scale([0.3,0.3,0.3])
         self._node.addChild(transNode)
- 
+
     def renderScene(self):
         if self._frameT >= 5:
             print('%i Frames/s' % (self._frameN // 5))
@@ -127,7 +128,7 @@ class PythonicUniverse(Application):
 
         window = WindowWidget(self._windowLayer)
         window.Title.Text = "Test"
-        
+
         self.theme.applyStyles(self)
 
         self._shader = ResourceManager().require("/data/shaders/ui.shader")
@@ -186,7 +187,7 @@ class PythonicUniverse(Application):
         # sys.exit(1)
 
     def onKeyDown(self, symbol, modifiers):
-        if symbol == key.ESCAPE:
+        if symbol == key.Escape:
             cuni.exit()
 
     def render(self):
