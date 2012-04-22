@@ -18,15 +18,15 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=19
+current_page=2
 FILE_NAME_0=1331;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/py-universe.py;0;4
 FILE_NAME_1=2105;Python;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/iterutils.py;0;4
-FILE_NAME_2=1945;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/pyuni-client.cpp;0;4
+FILE_NAME_2=1513;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/pyuni-client.cpp;0;4
 FILE_NAME_3=2900;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/WindowInterface/Display.hpp;0;4
 FILE_NAME_4=1229;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/WindowInterface/Window.hpp;0;4
 FILE_NAME_5=0;CMake;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/WindowInterface/CMakeLists.txt;0;4
-FILE_NAME_6=279;CMake;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/CMakeLists.txt;0;4
-FILE_NAME_7=1987;CMake;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/CMakeLists.txt;0;4
+FILE_NAME_6=64;CMake;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/CMakeLists.txt;0;4
+FILE_NAME_7=1422;CMake;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/CMakeLists.txt;0;4
 FILE_NAME_8=4302;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/WindowInterface/Display.cpp;0;4
 FILE_NAME_9=1356;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/WindowInterface/X11/X11Display.hpp;0;4
 FILE_NAME_10=1046;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/WindowInterface/X11/X11Window.hpp;0;4
@@ -37,9 +37,24 @@ FILE_NAME_14=1252;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse
 FILE_NAME_15=0;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/WindowInterface/EventSink.cpp;0;4
 FILE_NAME_16=1112;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/WindowInterface/EventSink.hpp;0;4
 FILE_NAME_17=1055;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/WindowInterface/X11/EventLoop.cpp;0;4
-FILE_NAME_18=1192;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/Package.cpp;0;4
+FILE_NAME_18=6316;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/Package.cpp;0;4
 FILE_NAME_19=1070;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/Package.hpp;0;4
 FILE_NAME_20=4587;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/Window.cpp;0;4
+FILE_NAME_21=270;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/GL/CairoUtils.hpp;0;4
+FILE_NAME_22=123;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/GL/CairoUtils.cpp;0;4
+FILE_NAME_23=254;CMake;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/GL/CMakeLists.txt;0;4
+FILE_NAME_24=0;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/Misc/Exception.hpp;0;4
+FILE_NAME_25=5092;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/GL.cpp;0;4
+FILE_NAME_26=1258;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/GL.hpp;0;4
+FILE_NAME_27=0;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/Resources.hpp;0;4
+FILE_NAME_28=1694;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/Resources.cpp;0;4
+FILE_NAME_29=0;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/Helpers.hpp;0;4
+FILE_NAME_30=181;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/CairoHelpers.hpp;0;4
+FILE_NAME_31=1101;C++;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/cpphost/PythonInterface/CairoHelpers.cpp;0;4
+FILE_NAME_32=7384;C;0;16;0;1;1;/usr/include/pycairo/pycairo.h;0;4
+FILE_NAME_33=495;CMake;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/CMakeModules/FindCairo.cmake;0;4
+FILE_NAME_34=39;CMake;0;16;0;1;1;/home/horazont/Projects/python/PythonicUniverse/CMakeModules/FindPango.cmake;0;4
+FILE_NAME_35=2714;C;0;16;0;1;1;/usr/src/debug/Python-2.7.2/Objects/cobject.c;0;4
 
 [VTE]
 last_dir=/var/www/dataroot/horazont/priyomdb
