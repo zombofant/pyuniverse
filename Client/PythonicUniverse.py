@@ -30,6 +30,8 @@ import CUni.GL as CGL
 import CUni.SceneGraph as CSceneGraph
 import CUni.Window.key as key
 
+import cairo
+
 import StringIO
 from OpenGL.GL import *
 import math
@@ -37,6 +39,7 @@ import os
 import sys
 import numpy as np
 import gc
+import time
 
 from Engine.Application import Application
 from Engine.UI import SceneWidget, VBox, HBox, LabelWidget, WindowWidget
@@ -50,6 +53,7 @@ import Engine.Resources.MaterialLoader
 import Engine.Resources.ShaderLoader
 from Engine.GL.Shader import Shader
 from Engine.GL.RenderModel import RenderModel
+from Engine.GL.Texture import Texture2D
 from Engine.GL.SceneGraph.Core import SceneGraph, Node
 from Engine.UI.Theme import Theme
 import Engine.GL.Base as GL
@@ -154,37 +158,30 @@ class PythonicUniverse(Application):
         glUniform1i(shader["texture"], 0)
 
         Shader.unbind()
-
-        testBuffer = CGL.GeometryBuffer(CGL.VertexFormat("v:4;c:3"), GL_DYNAMIC_DRAW)
-        alloc0 = testBuffer.allocateVertices(1024)
-        alloc1 = testBuffer.allocateVertices(1024)
-        testBuffer.gc()
-        del alloc1
-        view = CGL.GeometryBufferView(testBuffer, alloc0)
-        del alloc0
-        testBuffer.gc()
-        view.Vertex[:3,0].set([0., 0., 0.])
-        testBuffer.gc()
-        del view
-        testBuffer.gc()
-        testBuffer.gc()
-        """testBuffer.gc()
-        allocs0 = [testBuffer.allocateVertices(1024) for i in range(10)]
-        testBuffer.gc()
-        del allocs0[0]
-        del allocs0[1]
-        testBuffer.gc()
-        toview = allocs0[0]
-        view = CGL.GeometryBufferView(testBuffer, toview)
-        testBuffer.gc()
-        del view
-        allocs1 = [testBuffer.allocateVertices(1024) for i in range(10)]
-        testBuffer.gc()
-        del allocs0
-        del allocs1
-        testBuffer.gc()
-        testBuffer.gc()"""
         # sys.exit(1)
+        self.cairoTex = Texture2D(256, 256, format=GL_RGBA8, data=(GL_RGBA, GL_UNSIGNED_BYTE, None))
+        self.cairoSurf = cairo.ImageSurface(cairo.FORMAT_ARGB32, 256, 256)
+        self.cairoCtx = cairo.Context(self.cairoSurf)
+        self.cairoTest()
+    
+    def cairoTest(self):
+        cr = self.cairoCtx
+
+        cr.scale(1.0, 1.0)
+        cr.save()
+        cr.rectangle(0, 0, 64, 64)
+        cr.clip()
+        cr.set_source_rgb(0.5, 0, 0.5)
+        cr.paint()
+        cr.restore()
+        
+        cr.rectangle(64, 0, 128, 64)
+        cr.clip()
+        cr.set_source_rgb(0.0, 0.5, 0.5)
+        cr.paint()
+
+        self.cairoTex.bind()
+        CGL.glTexCairoSurfaceSubImage2D(GL_TEXTURE_2D, 0, 0, 0, self.cairoSurf)
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.Escape:
@@ -211,4 +208,19 @@ class PythonicUniverse(Application):
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         self.render()
+
+        self.cairoTest()
+        glEnable(GL_TEXTURE_2D)
+        glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
+        glVertex2f(0, 0)
+        glTexCoord2f(0, 1)
+        glVertex2f(0, 256)
+        glTexCoord2f(1, 1)
+        glVertex2f(256, 256)
+        glTexCoord2f(1, 0)
+        glVertex2f(256, 0)
+        glEnd()
+        glDisable(GL_TEXTURE_2D)
+        Texture2D.unbind()
         window.flip()
