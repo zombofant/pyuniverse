@@ -51,6 +51,7 @@ import Engine.Resources.ModelLoader
 import Engine.Resources.CSSLoader
 import Engine.Resources.MaterialLoader
 import Engine.Resources.ShaderLoader
+from Engine.GL import makePOT
 from Engine.GL.Shader import Shader
 from Engine.GL.RenderModel import RenderModel
 from Engine.GL.Texture import Texture2D
@@ -130,8 +131,11 @@ class PythonicUniverse(Application):
         #scene = Scene(mainScreen)
         #self.addSceneWidget(scene)
 
-        window = WindowWidget(self._windowLayer)
-        window.Title.Text = "Test"
+        for x in xrange(10):
+            for y in xrange(10):
+                window = WindowWidget(self._windowLayer)
+                window.Title.Text = "Test"
+                window.AbsoluteRect.XYWH = (x * 32, y * 32, 32, 32)
 
         self.theme.applyStyles(self)
 
@@ -158,30 +162,33 @@ class PythonicUniverse(Application):
         glUniform1i(shader["texture"], 0)
 
         Shader.unbind()
-        # sys.exit(1)
-        self.cairoTex = Texture2D(256, 256, format=GL_RGBA8, data=(GL_RGBA, GL_UNSIGNED_BYTE, None))
-        self.cairoSurf = cairo.ImageSurface(cairo.FORMAT_ARGB32, 256, 256)
-        self.cairoCtx = cairo.Context(self.cairoSurf)
-        self.cairoTest()
-    
-    def cairoTest(self):
-        cr = self.cairoCtx
 
-        cr.scale(1.0, 1.0)
-        cr.save()
-        cr.rectangle(0, 0, 64, 64)
-        cr.clip()
-        cr.set_source_rgb(0.5, 0, 0.5)
-        cr.paint()
-        cr.restore()
+        w, h = mainScreen.AbsoluteRect.Width, mainScreen.AbsoluteRect.Height
+        potW, potH = makePOT(w), makePOT(h)
+
+        self.cairoTexCoords = (w / potW, h / potH)
         
-        cr.rectangle(64, 0, 128, 64)
-        cr.clip()
-        cr.set_source_rgb(0.0, 0.5, 0.5)
-        cr.paint()
+        self.cairoTex = Texture2D(
+            potW, potH, format=GL_RGBA,
+            data=(GL_RGBA, GL_UNSIGNED_BYTE, None))
+        
+        self.cairoSurf = cairo.ImageSurface(
+            cairo.FORMAT_ARGB32,
+            w,
+            h
+        )
+        self._cairoContext = cairo.Context(self.cairoSurf)
+            
+        self.updateRenderingContext()
+        
+        # sys.exit(1)
 
-        self.cairoTex.bind()
-        CGL.glTexCairoSurfaceSubImage2D(GL_TEXTURE_2D, 0, 0, 0, self.cairoSurf)
+    def clearCairoSurface(self):
+        ctx = self._cairoContext
+        ctx.set_source_rgba(0., 0., 0., 0.)
+        ctx.set_operator(cairo.OPERATOR_SOURCE)
+        ctx.paint()
+        ctx.set_operator(cairo.OPERATOR_OVER)
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.Escape:
@@ -205,22 +212,32 @@ class PythonicUniverse(Application):
         r = self._primaryWidget.AbsoluteRect.XYWH
         glOrtho(r[0], r[2], r[3], r[1], -1., 1.)
         glMatrixMode(GL_MODELVIEW)
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        self.render()
+        ctx = self._cairoContext
+        self.clearCairoSurface()
+        if not hasattr(self, "cairoGroup"):
+            ctx.push_group()
+            self.render()
+            self.cairoGroup = ctx.pop_group()
+        
+        ctx.set_source(self.cairoGroup)
+        ctx.rectangle(*r)
+        ctx.fill()
+    
 
-        self.cairoTest()
+        self.cairoTex.bind()
+        s, t = self.cairoTexCoords
+        CGL.glTexCairoSurfaceSubImage2D(GL_TEXTURE_2D, 0, 0, 0, self.cairoSurf)
         glEnable(GL_TEXTURE_2D)
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
         glBegin(GL_QUADS)
         glTexCoord2f(0, 0)
         glVertex2f(0, 0)
-        glTexCoord2f(0, 1)
-        glVertex2f(0, 256)
-        glTexCoord2f(1, 1)
-        glVertex2f(256, 256)
-        glTexCoord2f(1, 0)
-        glVertex2f(256, 0)
+        glTexCoord2f(0, t)
+        glVertex2f(0, r[3])
+        glTexCoord2f(s, t)
+        glVertex2f(r[2], r[3])
+        glTexCoord2f(s, 0)
+        glVertex2f(r[2], 0)
         glEnd()
-        glDisable(GL_TEXTURE_2D)
         Texture2D.unbind()
         window.flip()
