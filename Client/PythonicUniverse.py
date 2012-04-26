@@ -131,8 +131,8 @@ class PythonicUniverse(Application):
         #scene = Scene(mainScreen)
         #self.addSceneWidget(scene)
 
-        for x in xrange(10):
-            for y in xrange(10):
+        for x in xrange(20):
+            for y in xrange(20):
                 window = WindowWidget(self._windowLayer)
                 window.Title.Text = "Test"
                 window.AbsoluteRect.XYWH = (x * 32, y * 32, 32, 32)
