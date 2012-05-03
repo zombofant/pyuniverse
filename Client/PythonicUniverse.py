@@ -1,3 +1,4 @@
+# encoding=utf-8
 # File name: PythonicUniverse.py
 # This file is part of: pyuni
 #
@@ -29,6 +30,7 @@ import CUni
 import CUni.GL as CGL
 import CUni.SceneGraph as CSceneGraph
 import CUni.Window.key as key
+import CUni.Pango as Pango
 
 import cairo
 
@@ -178,6 +180,7 @@ class PythonicUniverse(Application):
             h
         )
         self._cairoContext = cairo.Context(self.cairoSurf)
+        self._pangoContext = Pango.PangoCairoContext(self._cairoContext)
             
         self.updateRenderingContext()
         
@@ -222,6 +225,15 @@ class PythonicUniverse(Application):
         ctx.set_source(self.cairoGroup)
         ctx.rectangle(*r)
         ctx.fill()
+
+        ctx.translate(5, 5)
+        ctx.set_source_rgba(1., 1., 1., 1.)
+        self._pangoContext.updateContext()
+        layout = Pango.PangoLayout(self._pangoContext)
+        layout.setMarkup("This is pythonic universe speaking!\nThe following line is really important!\n∀ε>0: ∃δ>0: f(B<sub>δ</sub>(x<sub>0</sub>)∩D(f)) ⊂ B<sub>ε</sub>(f(x<sub>0</sub>))")
+        self._pangoContext.showLayout(layout)
+        del layout
+        ctx.identity_matrix()
     
 
         self.cairoTex.bind()
