@@ -226,14 +226,18 @@ class PythonicUniverse(Application):
         ctx.rectangle(*r)
         ctx.fill()
 
-        ctx.translate(5, 5)
         ctx.set_source_rgba(1., 1., 1., 1.)
+        self._pangoContext.Resolution = 72 # this gives pt == pixel
         self._pangoContext.updateContext()
         layout = Pango.PangoLayout(self._pangoContext)
-        layout.setMarkup("This is pythonic universe speaking!\nThe following line is really important!\n∀ε>0: ∃δ>0: f(B<sub>δ</sub>(x<sub>0</sub>)∩D(f)) ⊂ B<sub>ε</sub>(f(x<sub>0</sub>))")
+        layout.Text = """automagically: /aw·toh·maj´i·klee/, adv.
+    Automatically, but in a way that, for some reason (typically because it is too complicated, or too ugly, or perhaps even too trivial), the speaker doesn't feel like explaining to you. See magic. “The C-INTERCAL compiler generates C, then automagically invokes cc(1) to produce an executable.”
+    This term is quite old, going back at least to the mid-70s in jargon and probably much earlier. The word ‘automagic’ occurred in advertising (for a shirt-ironing gadget) as far back as the late 1940s."""
+        layout.Width = 512 * Pango.Scale
+        layout.Justify = True
+        layout.Wrap = Pango.WrapMode.WordChar
         self._pangoContext.showLayout(layout)
         del layout
-        ctx.identity_matrix()
     
 
         self.cairoTex.bind()
