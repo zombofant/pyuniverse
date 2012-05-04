@@ -195,7 +195,8 @@ class PythonicUniverse(Application):
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.Escape:
-            cuni.exit()
+            print("bye!")
+            self._eventLoop.terminate()
 
     def render(self):
         self._geometryBuffer.bind()
