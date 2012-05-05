@@ -60,6 +60,7 @@ from Engine.GL.Texture import Texture2D
 from Engine.GL.SceneGraph.Core import SceneGraph, Node
 from Engine.UI.Theme import Theme
 import Engine.GL.Base as GL
+from Engine.UI.CSS.Rect import Rect
 
 class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
@@ -198,6 +199,84 @@ class PythonicUniverse(Application):
             print("bye!")
             self._eventLoop.terminate()
 
+    def cairoTesting(self):
+        r = Rect()
+        r.XYWH = (32, 32, 128, 24)
+
+        pi = math.pi
+        # topleft topright bottomleft bottomright
+        radius = (2, 4, 8, 16)
+        hasRadius = radius[0] > 0 or radius[1] > 0 or radius[2] > 0 or radius[3] > 0
+        shearLeft, shearRight = 0, 0
+        hasShear = shearLeft or shearRight
+        top, left, right, bottom = r.Top, r.Left, r.Right, r.Bottom
+        cr = self._cairoContext
+
+        if not hasShear:
+            if hasRadius:
+                currRadius = radius[0]
+                cr.arc(left + currRadius, top + currRadius, currRadius, 2*(pi/2), 3*(pi/2))
+                currRadius = radius[1]
+                cr.arc(right - currRadius, top + currRadius, currRadius, 3*(pi/2), 4*(pi/2))
+                currRadius = radius[2]
+                cr.arc(right - currRadius, bottom - currRadius, currRadius, 0*(pi/2), 1*(pi/2))  # ;o)
+                currRadius = radius[3]
+                cr.arc(left + currRadius, bottom - currRadius, currRadius, 1*(pi/2), 2*(pi/2))
+                cr.close_path()
+            else:
+                cr.rectangle(top, left, r.Width, r.Height)
+        else:
+            if hasRadius:
+                if shearLeft > 0:
+                    x0y0 = (left + shearLeft + radius[0], top + radius[0])
+                    x0y1 = (left + radius[2], bottom - radius[2])
+                else:
+                    x0y0 = (left + radius[0], top + radius[0])
+                    x0y1 = (left + radius[2] - shearLeft, bottom - radius[2])
+                if shearRight > 0:
+                    x1y0 = (right - radius[1], top + radius[1])
+                    x1y1 = (right - (shearRight + radius[3]), bottom - radius[3])
+                else:
+                    x1y0 = (right + shearRight - radius[1], top + radius[1])
+                    x1y1 = (right - radius[3], bottom - radius[3])
+                leftLessAngle = math.atan(shearLeft/r.Height)
+                rightLessAngle = math.atan(shearRight/r.Height)
+                cr.arc(x0y0[0], x0y0[1], radius[0], 2*(pi/2) + leftLessAngle, 3*(pi/2))
+                cr.arc(x1y0[0], x1y0[1], radius[1], 3*(pi/2), 4*(pi/2) + rightLessAngle)
+                cr.arc(x1y1[0], x1y1[1], radius[3], 0*(pi/2) + rightLessAngle, 1*(pi/2))  # ;o)
+                cr.arc(x0y1[0], x0y1[1], radius[2], 1*(pi/2), 2*(pi/2) + leftLessAngle)
+                cr.close_path()
+            else:
+                if shearLeft > 0:
+                    x0y0 = (left + shearLeft, top)
+                    x0y1 = (left, bottom)
+                else:
+                    x0y0 = (left, top)
+                    x0y1 = (left - shearLeft, bottom)
+                if shearRight > 0:
+                    x1y0 = (right, top)
+                    x1y1 = (right - shearRight, bottom)
+                else:
+                    x1y0 = (right + shearRight, top)
+                    x1y1 = (right, bottom)
+                cr.move_to(*x0y0)
+                cr.line_to(*x1y0)
+                cr.line_to(*x1y1)
+                cr.line_to(*x0y1)
+                cr.close_path()
+                
+            
+        cr.set_line_width(1)
+        cr.set_source_rgba(0.0, 0.5, 0.0, 1.0)
+        cr.fill_preserve()
+        cr.set_source_rgba(0.0, 1.0, 1.0, 1.0)
+        cr.stroke()
+
+        cr.set_line_width(1)
+        cr.set_source_rgba(1., 0., 0., 1.)
+        cr.rectangle(r.Left - 1.5, r.Top - 1.5, r.Width + 3, r.Height + 3)
+        cr.stroke()
+
     def render(self):
         self._geometryBuffer.bind()
         self._shader.bind(texturing=True, upsideDown=False)
@@ -218,28 +297,8 @@ class PythonicUniverse(Application):
         glMatrixMode(GL_MODELVIEW)
         ctx = self._cairoContext
         self.clearCairoSurface()
-        if not hasattr(self, "cairoGroup"):
-            ctx.push_group()
-            self.render()
-            self.cairoGroup = ctx.pop_group()
-        
-        ctx.set_source(self.cairoGroup)
-        ctx.rectangle(*r)
-        ctx.fill()
 
-        ctx.set_source_rgba(1., 1., 1., 1.)
-        self._pangoContext.Resolution = 72 # this gives pt == pixel
-        self._pangoContext.updateContext()
-        layout = Pango.PangoLayout(self._pangoContext)
-        layout.Text = """automagically: /aw·toh·maj´i·klee/, adv.
-    Automatically, but in a way that, for some reason (typically because it is too complicated, or too ugly, or perhaps even too trivial), the speaker doesn't feel like explaining to you. See magic. “The C-INTERCAL compiler generates C, then automagically invokes cc(1) to produce an executable.”
-    This term is quite old, going back at least to the mid-70s in jargon and probably much earlier. The word ‘automagic’ occurred in advertising (for a shirt-ironing gadget) as far back as the late 1940s."""
-        layout.Width = 512 * Pango.Scale
-        layout.Justify = True
-        layout.Wrap = Pango.WrapMode.WordChar
-        self._pangoContext.showLayout(layout)
-        del layout
-    
+        self.cairoTesting()
 
         self.cairoTex.bind()
         s, t = self.cairoTexCoords
