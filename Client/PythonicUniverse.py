@@ -57,7 +57,6 @@ from Engine.GL import makePOT
 from Engine.GL.Shader import Shader
 from Engine.GL.RenderModel import RenderModel
 from Engine.GL.Texture import Texture2D
-from Engine.GL.SceneGraph.Core import SceneGraph, Node
 from Engine.UI.Theme import Theme
 import Engine.GL.Base as GL
 from Engine.UI.CSS.Rect import Rect
@@ -69,11 +68,11 @@ class Scene(SceneWidget):
         self.rotZ = 0.
         self._frameN = 0
         self._frameT = 0
-        self._sceneGraph = SceneGraph()
+        self._sceneGraph = CSceneGraph.SceneGraph()
         self._testModel = ResourceManager().require('spaceship.obj', RenderModel)
-        self._node = Node() #rotationsnode
-        self._sceneGraph.rootNode.addChild(self._node)
-        transNode = Node()
+        self._node = CSceneGraph.Node() #rotationsnode
+        self._sceneGraph.RootNode.addChild(self._node)
+        transNode = CSceneGraph.Node()
         transNode.addChild(self._testModel)
         transNode.LocalTransformation.translate([0.,0.,-12.])
         transNode.LocalTransformation.scale([0.3,0.3,0.3])
@@ -131,8 +130,8 @@ class PythonicUniverse(Application):
 
         mainScreen = self._primaryWidget
 
-        #scene = Scene(mainScreen)
-        #self.addSceneWidget(scene)
+        scene = Scene(mainScreen)
+        self.addSceneWidget(scene)
 
         for x in xrange(20):
             for y in xrange(20):
