@@ -1,3 +1,4 @@
+# encoding=utf-8
 # File name: PythonicUniverse.py
 # This file is part of: pyuni
 #
@@ -29,6 +30,9 @@ import CUni
 import CUni.GL as CGL
 import CUni.SceneGraph as CSceneGraph
 import CUni.Window.key as key
+import CUni.Pango as Pango
+
+import cairo
 
 import StringIO
 from OpenGL.GL import *
@@ -37,6 +41,7 @@ import os
 import sys
 import numpy as np
 import gc
+import time
 
 from Engine.Application import Application
 from Engine.UI import SceneWidget, VBox, HBox, LabelWidget, WindowWidget
@@ -48,11 +53,14 @@ import Engine.Resources.ModelLoader
 import Engine.Resources.CSSLoader
 import Engine.Resources.MaterialLoader
 import Engine.Resources.ShaderLoader
+from Engine.GL import makePOT
 from Engine.GL.Shader import Shader
 from Engine.GL.RenderModel import RenderModel
+from Engine.GL.Texture import Texture2D
 from Engine.GL.SceneGraph.Core import SceneGraph, Node
 from Engine.UI.Theme import Theme
 import Engine.GL.Base as GL
+from Engine.UI.CSS.Rect import Rect
 
 class Scene(SceneWidget):
     def __init__(self, parent, **kwargs):
@@ -126,8 +134,11 @@ class PythonicUniverse(Application):
         #scene = Scene(mainScreen)
         #self.addSceneWidget(scene)
 
-        window = WindowWidget(self._windowLayer)
-        window.Title.Text = "Test"
+        for x in xrange(20):
+            for y in xrange(20):
+                window = WindowWidget(self._windowLayer)
+                window.Title.Text = "Test"
+                window.AbsoluteRect.XYWH = (x * 32, y * 32, 32, 32)
 
         self.theme.applyStyles(self)
 
@@ -155,40 +166,116 @@ class PythonicUniverse(Application):
 
         Shader.unbind()
 
-        testBuffer = CGL.GeometryBuffer(CGL.VertexFormat("v:4;c:3"), GL_DYNAMIC_DRAW)
-        alloc0 = testBuffer.allocateVertices(1024)
-        alloc1 = testBuffer.allocateVertices(1024)
-        testBuffer.gc()
-        del alloc1
-        view = CGL.GeometryBufferView(testBuffer, alloc0)
-        del alloc0
-        testBuffer.gc()
-        view.Vertex[:3,0].set([0., 0., 0.])
-        testBuffer.gc()
-        del view
-        testBuffer.gc()
-        testBuffer.gc()
-        """testBuffer.gc()
-        allocs0 = [testBuffer.allocateVertices(1024) for i in range(10)]
-        testBuffer.gc()
-        del allocs0[0]
-        del allocs0[1]
-        testBuffer.gc()
-        toview = allocs0[0]
-        view = CGL.GeometryBufferView(testBuffer, toview)
-        testBuffer.gc()
-        del view
-        allocs1 = [testBuffer.allocateVertices(1024) for i in range(10)]
-        testBuffer.gc()
-        del allocs0
-        del allocs1
-        testBuffer.gc()
-        testBuffer.gc()"""
+        w, h = mainScreen.AbsoluteRect.Width, mainScreen.AbsoluteRect.Height
+        potW, potH = makePOT(w), makePOT(h)
+
+        self.cairoTexCoords = (w / potW, h / potH)
+        
+        self.cairoTex = Texture2D(
+            potW, potH, format=GL_RGBA,
+            data=(GL_RGBA, GL_UNSIGNED_BYTE, None))
+        
+        self.cairoSurf = cairo.ImageSurface(
+            cairo.FORMAT_ARGB32,
+            w,
+            h
+        )
+        self._cairoContext = cairo.Context(self.cairoSurf)
+        self._pangoContext = Pango.PangoCairoContext(self._cairoContext)
+            
+        self.updateRenderingContext()
+        
         # sys.exit(1)
+
+    def clearCairoSurface(self):
+        ctx = self._cairoContext
+        ctx.set_source_rgba(0., 0., 0., 0.)
+        ctx.set_operator(cairo.OPERATOR_SOURCE)
+        ctx.paint()
+        ctx.set_operator(cairo.OPERATOR_OVER)
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.Escape:
-            cuni.exit()
+            print("bye!")
+            self._eventLoop.terminate()
+
+    def cairoTesting(self):
+        r = Rect()
+        r.XYWH = (32, 32, 128, 24)
+
+        pi = math.pi
+        # topleft topright bottomleft bottomright
+        radius = (2, 4, 8, 16)
+        hasRadius = radius[0] > 0 or radius[1] > 0 or radius[2] > 0 or radius[3] > 0
+        shearLeft, shearRight = 0, 0
+        hasShear = shearLeft or shearRight
+        top, left, right, bottom = r.Top, r.Left, r.Right, r.Bottom
+        cr = self._cairoContext
+
+        if not hasShear:
+            if hasRadius:
+                currRadius = radius[0]
+                cr.arc(left + currRadius, top + currRadius, currRadius, 2*(pi/2), 3*(pi/2))
+                currRadius = radius[1]
+                cr.arc(right - currRadius, top + currRadius, currRadius, 3*(pi/2), 4*(pi/2))
+                currRadius = radius[2]
+                cr.arc(right - currRadius, bottom - currRadius, currRadius, 0*(pi/2), 1*(pi/2))  # ;o)
+                currRadius = radius[3]
+                cr.arc(left + currRadius, bottom - currRadius, currRadius, 1*(pi/2), 2*(pi/2))
+                cr.close_path()
+            else:
+                cr.rectangle(top, left, r.Width, r.Height)
+        else:
+            if hasRadius:
+                if shearLeft > 0:
+                    x0y0 = (left + shearLeft + radius[0], top + radius[0])
+                    x0y1 = (left + radius[2], bottom - radius[2])
+                else:
+                    x0y0 = (left + radius[0], top + radius[0])
+                    x0y1 = (left + radius[2] - shearLeft, bottom - radius[2])
+                if shearRight > 0:
+                    x1y0 = (right - radius[1], top + radius[1])
+                    x1y1 = (right - (shearRight + radius[3]), bottom - radius[3])
+                else:
+                    x1y0 = (right + shearRight - radius[1], top + radius[1])
+                    x1y1 = (right - radius[3], bottom - radius[3])
+                leftLessAngle = math.atan(shearLeft/r.Height)
+                rightLessAngle = math.atan(shearRight/r.Height)
+                cr.arc(x0y0[0], x0y0[1], radius[0], 2*(pi/2) + leftLessAngle, 3*(pi/2))
+                cr.arc(x1y0[0], x1y0[1], radius[1], 3*(pi/2), 4*(pi/2) + rightLessAngle)
+                cr.arc(x1y1[0], x1y1[1], radius[3], 0*(pi/2) + rightLessAngle, 1*(pi/2))  # ;o)
+                cr.arc(x0y1[0], x0y1[1], radius[2], 1*(pi/2), 2*(pi/2) + leftLessAngle)
+                cr.close_path()
+            else:
+                if shearLeft > 0:
+                    x0y0 = (left + shearLeft, top)
+                    x0y1 = (left, bottom)
+                else:
+                    x0y0 = (left, top)
+                    x0y1 = (left - shearLeft, bottom)
+                if shearRight > 0:
+                    x1y0 = (right, top)
+                    x1y1 = (right - shearRight, bottom)
+                else:
+                    x1y0 = (right + shearRight, top)
+                    x1y1 = (right, bottom)
+                cr.move_to(*x0y0)
+                cr.line_to(*x1y0)
+                cr.line_to(*x1y1)
+                cr.line_to(*x0y1)
+                cr.close_path()
+                
+            
+        cr.set_line_width(1)
+        cr.set_source_rgba(0.0, 0.5, 0.0, 1.0)
+        cr.fill_preserve()
+        cr.set_source_rgba(0.0, 1.0, 1.0, 1.0)
+        cr.stroke()
+
+        cr.set_line_width(1)
+        cr.set_source_rgba(1., 0., 0., 1.)
+        cr.rectangle(r.Left - 1.5, r.Top - 1.5, r.Width + 3, r.Height + 3)
+        cr.stroke()
 
     def render(self):
         self._geometryBuffer.bind()
@@ -208,7 +295,25 @@ class PythonicUniverse(Application):
         r = self._primaryWidget.AbsoluteRect.XYWH
         glOrtho(r[0], r[2], r[3], r[1], -1., 1.)
         glMatrixMode(GL_MODELVIEW)
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        self.render()
+        ctx = self._cairoContext
+        self.clearCairoSurface()
+
+        self.cairoTesting()
+
+        self.cairoTex.bind()
+        s, t = self.cairoTexCoords
+        CGL.glTexCairoSurfaceSubImage2D(GL_TEXTURE_2D, 0, 0, 0, self.cairoSurf)
+        glEnable(GL_TEXTURE_2D)
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
+        glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
+        glVertex2f(0, 0)
+        glTexCoord2f(0, t)
+        glVertex2f(0, r[3])
+        glTexCoord2f(s, t)
+        glVertex2f(r[2], r[3])
+        glTexCoord2f(s, 0)
+        glVertex2f(r[2], 0)
+        glEnd()
+        Texture2D.unbind()
         window.flip()
