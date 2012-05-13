@@ -85,7 +85,7 @@ class Scene(SceneWidget):
         self._node.rotate(1., 0.,0., self.rotX)
         self._node.rotate(0., 0.,1., self.rotZ)
         # TEST: (scenegraph does not set transformation yet)
-        glTranslatef(0., 0., -12.)
+        glTranslatef(0., 0., -23.)
         glRotatef(self.rotX, 1., 0., 0.)
         glRotatef(self.rotZ, 0., 0., 1.)
         # ---
