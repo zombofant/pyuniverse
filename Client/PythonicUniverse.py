@@ -66,8 +66,6 @@ class Scene(SceneWidget):
         super(Scene, self).__init__(parent)
         self.rotX = 0.
         self.rotZ = 0.
-        self._frameN = 0
-        self._frameT = 0
         self._sceneGraph = CSceneGraph.SceneGraph()
         self._testModel = ResourceManager().require('spaceship.obj', RenderModel)
         self._node = CSceneGraph.Node() #rotationsnode
@@ -75,36 +73,29 @@ class Scene(SceneWidget):
         transNode = CSceneGraph.Node()
         transNode.addChild(self._testModel)
         transNode.translate(0.,0.,-12.)
-        transNode.scale(0.3,0.3,0.3)
+        transNode.scale(0.5,0.5,0.5)
         self._node.addChild(transNode)
 
     def renderScene(self):
-        if self._frameT >= 5:
-            print('%i Frames/s' % (self._frameN // 5))
-            self._frameN = 0
-            self._frameT -= 5
         self._setupProjection()
         glEnable(GL_CULL_FACE)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_TEXTURE_2D)
         glPushMatrix()
-        self._node.rotate(1., 0.,0., self.rotX)
-        self._node.rotate(0., 0.,1., self.rotZ)
+        self._node.setRotation(self.rotX, 1.,0.,0.)
+        self._node.rotate(self.rotZ, 0.,0.,1.)
         self._sceneGraph.update(0)
-        self._sceneGraph.renderScene()
-        #self._node.LocalTransformation.reset()
+        self._sceneGraph.draw()
         self._resetProjection()
         glPopMatrix()
         glDisable(GL_DEPTH_TEST)
         glDisable(GL_CULL_FACE)
-        self._frameN += 1
 
     def update(self, timeDelta):
-        self.rotX += timeDelta * 5.
-        self.rotZ += timeDelta * 10.
-        self.rotX -= (self.rotX // 360 ) * 360
-        self.rotZ -= (self.rotZ // 360) * 360
-        self._frameT += timeDelta
+        self.rotX += timeDelta * 0.5
+        self.rotZ += timeDelta * 0.7
+        self.rotX -= (self.rotX // (2*math.pi)) * 2*math.pi
+        self.rotZ -= (self.rotZ // (2*math.pi)) * 2*math.pi
         # print(timeDelta)
 
 class LeafTest(CSceneGraph.Leaf):
@@ -294,11 +285,25 @@ class PythonicUniverse(Application):
         window = self._screens[0][0]
         window.switchTo()
 
+        r = self._primaryWidget.AbsoluteRect.XYWH
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
+
+        wx, wy, ww, wh = r
+
+        for sceneWidget in window._sceneWidgets:
+            x, y, w, h = sceneWidget.AbsoluteRect.XYWH
+            #xlog, ylog = window.UILogicalCoord
+            #x -= xlog
+            #y -= ylog
+            glViewport(x, y, w, h)
+            sceneWidget.update(deltaT)
+            sceneWidget.renderScene()
+
+        glViewport(0, 0, ww, wh)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        r = self._primaryWidget.AbsoluteRect.XYWH
         glOrtho(r[0], r[2], r[3], r[1], -1., 1.)
         glMatrixMode(GL_MODELVIEW)
         ctx = self._cairoContext
@@ -310,6 +315,7 @@ class PythonicUniverse(Application):
         s, t = self.cairoTexCoords
         CGL.glTexCairoSurfaceSubImage2D(GL_TEXTURE_2D, 0, 0, 0, self.cairoSurf)
         glEnable(GL_TEXTURE_2D)
+        glEnable(GL_BLEND)
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
         glBegin(GL_QUADS)
         glTexCoord2f(0, 0)
@@ -322,4 +328,5 @@ class PythonicUniverse(Application):
         glVertex2f(r[2], 0)
         glEnd()
         Texture2D.unbind()
+
         window.flip()

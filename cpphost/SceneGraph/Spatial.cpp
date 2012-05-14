@@ -25,6 +25,9 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "Spatial.hpp"
 
+#include <iostream>
+#include <GL/glew.h>
+
 namespace PyUni {
 namespace SceneGraph {
 
@@ -58,7 +61,7 @@ void Spatial::updateWorldData()
 
     if(p.get())
     {
-        worldTransformation = p->worldTransformation*localTransformation;
+        worldTransformation = localTransformation*p->worldTransformation;
     }
     else
     {
@@ -68,32 +71,42 @@ void Spatial::updateWorldData()
 
 void Spatial::translate(double x, double y, double z)
 {
-    localTransformation.Translation(Vector3(x, y, z));
+    localTransformation = localTransformation * Matrix4().Translation(Vector3(x, y, z));
 }
 
-void Spatial::rotate(double x, double y, double z, double angle)
+void Spatial::setTranslation(double x, double y, double z)
 {
-    localTransformation.Rotation(Vector3(x, y, z), angle);
+    localTransformation = localTransformation.Translation(Vector3(x,y,z));
+}
+
+void Spatial::rotate(double angle, double x, double y, double z)
+{
+    localTransformation = localTransformation * Matrix4().Rotation(Vector3(x, y, z), angle);
+}
+
+void Spatial::setRotation(double angle, double x, double y, double z)
+{
+    localTransformation = localTransformation.Rotation(Vector3(x, y, z), angle);
 }
 
 void Spatial::scale(double x, double y, double z)
 {
-    localTransformation.Scale(Vector3(x, y, z));
+    localTransformation = localTransformation * Matrix4().Scale(Vector3(x, y, z));
 }
 
-void Spatial::onDraw()
+void Spatial::setScale(double x, double y, double z)
 {
+    localTransformation = localTransformation.Scale(Vector3(x, y, z));
 }
 
-void Spatial::draw()
+void Spatial::resetTransformation()
 {
+    localTransformation = Matrix4();
 }
 
-SpatialHandle Spatial::create()
+void Spatial::applyTransformation()
 {
-    SpatialHandle tmp(new Spatial());
-    tmp->_weak = tmp;
-    return tmp;
+    glLoadMatrixd(worldTransformation.coeff);
 }
 
 }

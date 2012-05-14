@@ -25,6 +25,9 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "Leaf.hpp"
 
+#include <cassert>
+#include <GL/glew.h>
+
 namespace PyUni {
 namespace SceneGraph {
 
@@ -34,14 +37,11 @@ Leaf::Leaf():
     Spatial::Spatial(),
     _vertexMap(new VertexMap())
 {
-
 }
 
-LeafHandle Leaf::create()
+void Leaf::draw()
 {
-    LeafHandle tmp(new Leaf());
-    tmp->_weak = tmp;
-    return tmp;
+    glLoadMatrixd(worldTransformation.coeff);
 }
 
 }
