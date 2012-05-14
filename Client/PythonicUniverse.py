@@ -67,13 +67,13 @@ class Scene(SceneWidget):
         self.rotX = 0.
         self.rotZ = 0.
         self._sceneGraph = CSceneGraph.SceneGraph()
-        self._testModel = ResourceManager().require('die.obj', RenderModel)
+        self._testModel = ResourceManager().require('spaceship.obj', RenderModel)
         self._node = CSceneGraph.Node() #rotationsnode
         self._sceneGraph.RootNode.addChild(self._node)
         transNode = CSceneGraph.Node()
         transNode.addChild(self._testModel)
         transNode.translate(0.,0.,-12.)
-        transNode.scale(1.5,1.5,1.5)
+        transNode.scale(0.5,0.5,0.5)
         self._node.addChild(transNode)
 
     def renderScene(self):
