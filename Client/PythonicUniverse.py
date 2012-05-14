@@ -71,9 +71,10 @@ class Scene(SceneWidget):
         self._sceneGraph = CSceneGraph.SceneGraph()
         self._testModel = ResourceManager().require('spaceship.obj', RenderModel)
         self._node = CSceneGraph.Node() #rotationsnode
-        self._sceneGraph.RootNode.addChild(self._node)
+        self._sceneGraph.RootNode.addChild(self._testModel)
+        # self._sceneGraph.RootNode.addChild(self._node)
         transNode = CSceneGraph.Node()
-        transNode.addChild(self._testModel)
+        # transNode.addChild(self._testModel)
         transNode.translate(0.,0.,-12.)
         transNode.scale(0.3,0.3,0.3)
         self._node.addChild(transNode)
@@ -91,7 +92,7 @@ class Scene(SceneWidget):
         self._node.rotate(1., 0.,0., self.rotX)
         self._node.rotate(0., 0.,1., self.rotZ)
         self._sceneGraph.update(0)
-        self._sceneGraph.renderScene()
+        self._sceneGraph.draw()
         #self._node.LocalTransformation.reset()
         self._resetProjection()
         glPopMatrix()
@@ -294,11 +295,24 @@ class PythonicUniverse(Application):
         window = self._screens[0][0]
         window.switchTo()
 
+        r = self._primaryWidget.AbsoluteRect.XYWH
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
+
+        wx, wy, ww, wh = r
+
+        for sceneWidget in window._sceneWidgets:
+            x, y, w, h = sceneWidget.AbsoluteRect.XYWH
+            #xlog, ylog = window.UILogicalCoord
+            #x -= xlog
+            #y -= ylog
+            glViewport(x, y, w, h)
+            sceneWidget.renderScene()
+
+        glViewport(0, 0, ww, wh)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        r = self._primaryWidget.AbsoluteRect.XYWH
         glOrtho(r[0], r[2], r[3], r[1], -1., 1.)
         glMatrixMode(GL_MODELVIEW)
         ctx = self._cairoContext
