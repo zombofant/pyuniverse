@@ -193,7 +193,7 @@ class PythonicUniverse(Application):
                 self._window.setWindowed(0, 800, 600)
                 self.fullscreen = False
             else:
-                self._window.setFullscreen(0, 0, 0, 0)
+                self._window.setFullscreen(0, 0, 1, 0)
                 self.fullscreen = True
 
     def cairoTesting(self):
