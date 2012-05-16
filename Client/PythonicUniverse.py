@@ -160,11 +160,11 @@ class PythonicUniverse(Application):
         potW, potH = makePOT(w), makePOT(h)
 
         self.cairoTexCoords = (w / potW, h / potH)
-        
+
         self.cairoTex = Texture2D(
             potW, potH, format=GL_RGBA,
             data=(GL_RGBA, GL_UNSIGNED_BYTE, None))
-        
+
         self.cairoSurf = cairo.ImageSurface(
             cairo.FORMAT_ARGB32,
             w,
@@ -172,9 +172,9 @@ class PythonicUniverse(Application):
         )
         self._cairoContext = cairo.Context(self.cairoSurf)
         self._pangoContext = Pango.PangoCairoContext(self._cairoContext)
-            
+
         self.updateRenderingContext()
-        
+
         # sys.exit(1)
 
     def clearCairoSurface(self):
@@ -188,6 +188,13 @@ class PythonicUniverse(Application):
         if symbol == key.Escape:
             print("bye!")
             self._eventLoop.terminate()
+        elif symbol == key.f:
+            if self.fullscreen:
+                self._window.setWindowed(0, 800, 600)
+                self.fullscreen = False
+            else:
+                self._window.setFullscreen(0, 0, 0, 0)
+                self.fullscreen = True
 
     def cairoTesting(self):
         r = Rect()
@@ -254,8 +261,8 @@ class PythonicUniverse(Application):
                 cr.line_to(*x1y1)
                 cr.line_to(*x0y1)
                 cr.close_path()
-                
-            
+
+
         cr.set_line_width(1)
         cr.set_source_rgba(0.0, 0.5, 0.0, 1.0)
         cr.fill_preserve()
