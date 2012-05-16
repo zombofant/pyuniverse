@@ -156,25 +156,6 @@ class PythonicUniverse(Application):
 
         Shader.unbind()
 
-        w, h = mainScreen.AbsoluteRect.Width, mainScreen.AbsoluteRect.Height
-        potW, potH = makePOT(w), makePOT(h)
-
-        self.cairoTexCoords = (w / potW, h / potH)
-
-        self.cairoTex = Texture2D(
-            potW, potH, format=GL_RGBA,
-            data=(GL_RGBA, GL_UNSIGNED_BYTE, None))
-
-        self.cairoSurf = cairo.ImageSurface(
-            cairo.FORMAT_ARGB32,
-            w,
-            h
-        )
-        self._cairoContext = cairo.Context(self.cairoSurf)
-        self._pangoContext = Pango.PangoCairoContext(self._cairoContext)
-
-        self.updateRenderingContext()
-
         # sys.exit(1)
 
     def clearCairoSurface(self):
@@ -196,6 +177,26 @@ class PythonicUniverse(Application):
                 self._window.setFullscreen(0, 0, 1, 0)
                 self.fullscreen = True
 
+    def doAlign(self):
+        super(PythonicUniverse, self).doAlign()
+
+        mainScreen = self._primaryWidget
+
+        w, h = mainScreen.AbsoluteRect.Width, mainScreen.AbsoluteRect.Height
+        if hasattr(self, "_cairoSurface") and w == self._cairoSurface.get_width() and h == self._cairoSurface.get_height():
+            return
+        potW, potH = makePOT(w), makePOT(h)
+
+        self.cairoTexCoords = (w / potW, h / potH)
+
+        self.cairoTex = Texture2D(
+            potW, potH, format=GL_RGBA,
+            data=(GL_RGBA, GL_UNSIGNED_BYTE, None))
+        self._cairoSurface = cairo.ImageSurface(cairo.FORMAT_ARGB32, w, h)
+        self._cairoContext = cairo.Context(self._cairoSurface)
+        self._pangoContext = Pango.PangoCairoContext(self._cairoContext)
+        self.updateRenderingContext()
+        
     def cairoTesting(self):
         r = Rect()
         r.XYWH = (32, 32, 128, 24)
@@ -310,7 +311,7 @@ class PythonicUniverse(Application):
 
         self.cairoTex.bind()
         s, t = self.cairoTexCoords
-        CGL.glTexCairoSurfaceSubImage2D(GL_TEXTURE_2D, 0, 0, 0, self.cairoSurf)
+        CGL.glTexCairoSurfaceSubImage2D(GL_TEXTURE_2D, 0, 0, 0, self._cairoSurface)
         glEnable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
