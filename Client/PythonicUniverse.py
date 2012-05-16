@@ -92,8 +92,8 @@ class Scene(SceneWidget):
         glDisable(GL_CULL_FACE)
 
     def update(self, timeDelta):
-        self.rotX += timeDelta * 0.5
-        self.rotZ += timeDelta * 0.7
+        self.rotX += timeDelta * 0.2
+        self.rotZ += timeDelta * 0.3
         self.rotX -= (self.rotX // (2*math.pi)) * 2*math.pi
         self.rotZ -= (self.rotZ // (2*math.pi)) * 2*math.pi
         # print(timeDelta)
@@ -278,26 +278,23 @@ class PythonicUniverse(Application):
         window = self._screens[0][0]
         window.switchTo()
 
-        r = self._primaryWidget.AbsoluteRect.XYWH
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
 
-        wx, wy, ww, wh = r
+        wx, wy, ww, wh = self._primaryWidget.AbsoluteRect.XYWH
 
         for sceneWidget in window._sceneWidgets:
-            x, y, w, h = sceneWidget.AbsoluteRect.XYWH
             #xlog, ylog = window.UILogicalCoord
             #x -= xlog
             #y -= ylog
-            glViewport(x, y, w, h)
+            glViewport(*sceneWidget.AbsoluteRect.XYWH)
             sceneWidget.update(deltaT)
             sceneWidget.renderScene()
 
         glViewport(0, 0, ww, wh)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        glOrtho(r[0], r[2], r[3], r[1], -1., 1.)
+        glOrtho(wx, ww, wh, wy, -1., 1.)
         glMatrixMode(GL_MODELVIEW)
         ctx = self._cairoContext
         self.clearCairoSurface()
@@ -314,11 +311,11 @@ class PythonicUniverse(Application):
         glTexCoord2f(0, 0)
         glVertex2f(0, 0)
         glTexCoord2f(0, t)
-        glVertex2f(0, r[3])
+        glVertex2f(0, wh)
         glTexCoord2f(s, t)
-        glVertex2f(r[2], r[3])
+        glVertex2f(ww, wh)
         glTexCoord2f(s, 0)
-        glVertex2f(r[2], 0)
+        glVertex2f(ww, 0)
         glEnd()
         Texture2D.unbind()
 
