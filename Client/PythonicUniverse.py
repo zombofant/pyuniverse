@@ -164,6 +164,7 @@ class PythonicUniverse(Application):
         ctx.set_operator(cairo.OPERATOR_SOURCE)
         ctx.paint()
         ctx.set_operator(cairo.OPERATOR_OVER)
+        ctx.set_line_cap(cairo.LINE_CAP_SQUARE)
 
     def onKeyDown(self, symbol, modifiers):
         if symbol == key.Escape:
