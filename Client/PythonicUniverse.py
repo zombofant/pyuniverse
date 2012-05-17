@@ -156,8 +156,6 @@ class PythonicUniverse(Application):
 
         Shader.unbind()
 
-        # sys.exit(1)
-
     def clearCairoSurface(self):
         ctx = self._cairoContext
         ctx.set_source_rgba(0., 0., 0., 0.)
@@ -197,84 +195,6 @@ class PythonicUniverse(Application):
         self._cairoContext = cairo.Context(self._cairoSurface)
         self._pangoContext = Pango.PangoCairoContext(self._cairoContext)
         self.updateRenderingContext()
-        
-    def cairoTesting(self):
-        r = Rect()
-        r.XYWH = (32, 32, 128, 24)
-
-        pi = math.pi
-        # topleft topright bottomleft bottomright
-        radius = (2, 4, 8, 16)
-        hasRadius = radius[0] > 0 or radius[1] > 0 or radius[2] > 0 or radius[3] > 0
-        shearLeft, shearRight = 0, 0
-        hasShear = shearLeft or shearRight
-        top, left, right, bottom = r.Top, r.Left, r.Right, r.Bottom
-        cr = self._cairoContext
-
-        if not hasShear:
-            if hasRadius:
-                currRadius = radius[0]
-                cr.arc(left + currRadius, top + currRadius, currRadius, 2*(pi/2), 3*(pi/2))
-                currRadius = radius[1]
-                cr.arc(right - currRadius, top + currRadius, currRadius, 3*(pi/2), 4*(pi/2))
-                currRadius = radius[2]
-                cr.arc(right - currRadius, bottom - currRadius, currRadius, 0*(pi/2), 1*(pi/2))  # ;o)
-                currRadius = radius[3]
-                cr.arc(left + currRadius, bottom - currRadius, currRadius, 1*(pi/2), 2*(pi/2))
-                cr.close_path()
-            else:
-                cr.rectangle(top, left, r.Width, r.Height)
-        else:
-            if hasRadius:
-                if shearLeft > 0:
-                    x0y0 = (left + shearLeft + radius[0], top + radius[0])
-                    x0y1 = (left + radius[2], bottom - radius[2])
-                else:
-                    x0y0 = (left + radius[0], top + radius[0])
-                    x0y1 = (left + radius[2] - shearLeft, bottom - radius[2])
-                if shearRight > 0:
-                    x1y0 = (right - radius[1], top + radius[1])
-                    x1y1 = (right - (shearRight + radius[3]), bottom - radius[3])
-                else:
-                    x1y0 = (right + shearRight - radius[1], top + radius[1])
-                    x1y1 = (right - radius[3], bottom - radius[3])
-                leftLessAngle = math.atan(shearLeft/r.Height)
-                rightLessAngle = math.atan(shearRight/r.Height)
-                cr.arc(x0y0[0], x0y0[1], radius[0], 2*(pi/2) + leftLessAngle, 3*(pi/2))
-                cr.arc(x1y0[0], x1y0[1], radius[1], 3*(pi/2), 4*(pi/2) + rightLessAngle)
-                cr.arc(x1y1[0], x1y1[1], radius[3], 0*(pi/2) + rightLessAngle, 1*(pi/2))  # ;o)
-                cr.arc(x0y1[0], x0y1[1], radius[2], 1*(pi/2), 2*(pi/2) + leftLessAngle)
-                cr.close_path()
-            else:
-                if shearLeft > 0:
-                    x0y0 = (left + shearLeft, top)
-                    x0y1 = (left, bottom)
-                else:
-                    x0y0 = (left, top)
-                    x0y1 = (left - shearLeft, bottom)
-                if shearRight > 0:
-                    x1y0 = (right, top)
-                    x1y1 = (right - shearRight, bottom)
-                else:
-                    x1y0 = (right + shearRight, top)
-                    x1y1 = (right, bottom)
-                cr.move_to(*x0y0)
-                cr.line_to(*x1y0)
-                cr.line_to(*x1y1)
-                cr.line_to(*x0y1)
-                cr.close_path()
-
-
-        cr.set_line_width(1)
-        cr.set_source_rgba(0.0, 0.5, 0.0, 1.0)
-        cr.fill_preserve()
-        cr.set_source_rgba(0.0, 1.0, 1.0, 1.0)
-        cr.stroke()
-
-        cr.set_line_width(1)
-        cr.set_source_rgba(1., 0., 0., 1.)
-        cr.rectangle(r.Left - 1.5, r.Top - 1.5, r.Width + 3, r.Height + 3)
-        cr.stroke()
 
     def render(self):
         self._geometryBuffer.bind()
