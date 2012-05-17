@@ -128,7 +128,7 @@ class PythonicUniverse(Application):
             for y in xrange(20):
                 window = WindowWidget(self._windowLayer)
                 window.Title.Text = "Test"
-                window.AbsoluteRect.XYWH = (x * 32, y * 32, 32, 32)
+                window.AbsoluteRect.XYWH = (x * 34, y * 34, 32, 32)
 
         self.theme.applyStyles(self)
 
@@ -307,7 +307,7 @@ class PythonicUniverse(Application):
         ctx = self._cairoContext
         self.clearCairoSurface()
 
-        self.cairoTesting()
+        self.render()
 
         self.cairoTex.bind()
         s, t = self.cairoTexCoords
