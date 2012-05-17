@@ -193,13 +193,6 @@ class PythonicUniverse(Application):
         self._pangoContext = Pango.PangoCairoContext(self._cairoContext)
         self.updateRenderingContext()
 
-    def render(self):
-        self._geometryBuffer.bind()
-        self._shader.bind(texturing=True, upsideDown=False)
-        super(PythonicUniverse, self).render()
-        Shader.unbind()
-        self._geometryBuffer.unbind()
-
     def frameUnsynced(self, deltaT):
         window = self._screens[0][0]
         window.switchTo()
@@ -210,9 +203,6 @@ class PythonicUniverse(Application):
         wx, wy, ww, wh = self._primaryWidget.AbsoluteRect.XYWH
 
         for sceneWidget in window._sceneWidgets:
-            #xlog, ylog = window.UILogicalCoord
-            #x -= xlog
-            #y -= ylog
             glViewport(*sceneWidget.AbsoluteRect.XYWH)
             sceneWidget.update(deltaT)
             sceneWidget.renderScene()
