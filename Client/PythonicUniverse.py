@@ -124,11 +124,9 @@ class PythonicUniverse(Application):
         scene = Scene(mainScreen)
         self.addSceneWidget(scene)
 
-        for x in xrange(20):
-            for y in xrange(20):
-                window = WindowWidget(self._windowLayer)
-                window.Title.Text = "Test"
-                window.AbsoluteRect.XYWH = (x * 34, y * 34, 32, 32)
+        window = WindowWidget(self._windowLayer)
+        window.Title.Text = "Test"
+        window.AbsoluteRect.XYWH = (32, 32, 128, 128)
 
         self.theme.applyStyles(self)
 
@@ -150,7 +148,6 @@ class PythonicUniverse(Application):
         ])
         shader = self._shader.bind(texturing=False)
 
-        #self._shaders.append(self._shader.bind(texturing=False))
         shader = self._shader.bind(texturing=True)
         glUniform1i(shader["texture"], 0)
 
