@@ -43,7 +43,7 @@ class BoundingVolume
     public:
         ~BoundingVolume();
 
-        virtual void computeFromVertices(float *vertices) = 0;
+        virtual void computeFromVertices(int n, int elmSize, const char *data) = 0;
         virtual void transform(Matrix4 transformation, BoundingVolume *target) = 0;
         //virtual int onSideOfPlane(const Plane3 plane) const = 0;
         virtual bool intersects(const Vector3 origin, const Vector3 direction) const = 0;

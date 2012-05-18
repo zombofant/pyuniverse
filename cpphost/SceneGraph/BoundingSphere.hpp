@@ -42,7 +42,7 @@ class BoundingSphere : public BoundingVolume
         BoundingSphere();
         ~BoundingSphere();
 
-        virtual void computeFromVertices(float *vertices);
+        virtual void computeFromVertices(int n, int elmSize, const char *data);
         virtual void transform(Matrix4 transformation, BoundingVolume *target);
         //virtual int onSideOfPlane(const Plane3 plane) const = 0;
         virtual bool intersects(const Vector3 origin, const Vector3 direction) const;
@@ -51,7 +51,7 @@ class BoundingSphere : public BoundingVolume
         virtual void growToContain(const BoundingVolume *other);
 
     protected:
-        float _radius;
+        double _radius;
         Vector3 _center;
 };
 
