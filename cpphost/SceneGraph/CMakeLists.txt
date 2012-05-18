@@ -1,5 +1,7 @@
 
 add_library(pyuni_SceneGraph STATIC
+    "BoundingVolume.cpp"
+    "BoundingSphere.cpp"
     "Spatial.cpp"
     "Node.cpp"
     "SceneGraph.cpp"

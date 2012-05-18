@@ -41,7 +41,7 @@ SceneGraph::~SceneGraph()
 
 void SceneGraph::update(double deltaT)
 {
-    _root->updateGeometry();
+    _root->updateGeometryState();
 }
 
 void SceneGraph::draw()

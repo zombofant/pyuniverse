@@ -30,6 +30,7 @@ named in the AUTHORS file.
 #include <boost/weak_ptr.hpp>
 
 #include "Math/Matrices.hpp"
+#include "BoundingVolume.hpp"
 
 namespace PyUni {
 namespace SceneGraph {
@@ -41,20 +42,22 @@ typedef boost::weak_ptr<Spatial> WeakSpatialHandle;
 
 class Spatial
 {
-    protected:
-        Spatial();
-
     public:
         virtual ~Spatial();
 
-        //Bound worldBound;
         Matrix4 localTransformation;
         Matrix4 worldTransformation;
+        BoundingVolume *worldBound;
+        bool worldNeedsUpdate;
 
-        void updateGeometry(bool initiator=true);
+        void updateGeometryState(bool initiator=true);
+        void updateBoundState();
 
         SpatialHandle getParent();
         void setParent(SpatialHandle p);
+
+        const std::string getObjectName() { return _objectName; }
+        void setObjectName(const std::string name) { _objectName = name; }
 
         virtual void translate(double x, double y, double z);
         virtual void setTranslation(double x, double y, double z);
@@ -69,11 +72,14 @@ class Spatial
         virtual void draw() = 0;
 
     protected:
+        Spatial();
+        virtual void updateWorldData();
+        virtual void updateWorldBound() = 0;
+        void advertiseBoundUpwards();
+
         WeakSpatialHandle _parent;
         WeakSpatialHandle _weak;
-        
-        virtual void updateWorldData();
-
+        std::string _objectName;
 };
 
 }

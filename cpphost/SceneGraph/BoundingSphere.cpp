@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Node.hpp
+File name: BoundingSphere.cpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,45 +23,51 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_SCENEGRAPH_NODE_H
-#define _PYUNI_SCENEGRAPH_NODE_H
+#include "BoundingSphere.hpp"
 
-#include <vector>
-
-#include <boost/shared_ptr.hpp>
-
-#include "Spatial.hpp"
+#include <cassert>
 
 namespace PyUni {
 namespace SceneGraph {
 
-class Node;
-
-typedef boost::shared_ptr<Node> NodeHandle;
-
-class Node : public Spatial
+BoundingSphere::BoundingSphere()
+    : _radius(1.), _center(Vector3(0,0,0))
 {
-    protected:
-        Node();
+}
 
-    public:
-        ~Node();
+BoundingSphere::~BoundingSphere()
+{
+}
 
-        void draw();
+void BoundingSphere::computeFromVertices(float *vertices)
+{
+}
 
-        void addChild(SpatialHandle child);
-        void removeChild(SpatialHandle child);
+void BoundingSphere::transform(Matrix4 transformation, BoundingVolume *target)
+{
+}
 
-        static NodeHandle create();
-    protected:
-        virtual void updateWorldData();
-        virtual void updateWorldBound();
+/*int onSideOfPlane(const Plane3 plane) const
+{
+}*/
 
-        std::vector<SpatialHandle> children; 
-};
+bool BoundingSphere::intersects(const Vector3 origin, const Vector3 direction) const
+{
+    return false;
+}
+
+bool BoundingSphere::intersects(const BoundingVolume *other) const
+{
+    return false;
+}
+
+void BoundingSphere::copyFrom(const BoundingVolume *other)
+{
+}
+
+void BoundingSphere::growToContain(const BoundingVolume *other)
+{
+}
 
 }
 }
-
-#endif
-

@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Node.hpp
+File name: BoundingVolume.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,41 +23,33 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_SCENEGRAPH_NODE_H
-#define _PYUNI_SCENEGRAPH_NODE_H
+#ifndef _PYUNI_SCENEGRAPH_BOUNDINGVOLUME_H
+#define _PYUNI_SCENEGRAPH_BOUNDINGVOLUME_H
 
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
 
-#include "Spatial.hpp"
+#include "Math/Matrices.hpp"
 
 namespace PyUni {
 namespace SceneGraph {
 
-class Node;
-
-typedef boost::shared_ptr<Node> NodeHandle;
-
-class Node : public Spatial
+class BoundingVolume
 {
     protected:
-        Node();
+        BoundingVolume();
 
     public:
-        ~Node();
+        ~BoundingVolume();
 
-        void draw();
-
-        void addChild(SpatialHandle child);
-        void removeChild(SpatialHandle child);
-
-        static NodeHandle create();
-    protected:
-        virtual void updateWorldData();
-        virtual void updateWorldBound();
-
-        std::vector<SpatialHandle> children; 
+        virtual void computeFromVertices(float *vertices) = 0;
+        virtual void transform(Matrix4 transformation, BoundingVolume *target) = 0;
+        //virtual int onSideOfPlane(const Plane3 plane) const = 0;
+        virtual bool intersects(const Vector3 origin, const Vector3 direction) const = 0;
+        virtual bool intersects(const BoundingVolume *other) const = 0;
+        virtual void copyFrom(const BoundingVolume *other) = 0;
+        virtual void growToContain(const BoundingVolume *other) = 0;
 };
 
 }

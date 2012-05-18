@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Node.hpp
+File name: BoundingVolume.cpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,45 +23,20 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_SCENEGRAPH_NODE_H
-#define _PYUNI_SCENEGRAPH_NODE_H
+#include "BoundingVolume.hpp"
 
-#include <vector>
-
-#include <boost/shared_ptr.hpp>
-
-#include "Spatial.hpp"
+#include <cassert>
 
 namespace PyUni {
 namespace SceneGraph {
 
-class Node;
-
-typedef boost::shared_ptr<Node> NodeHandle;
-
-class Node : public Spatial
+BoundingVolume::BoundingVolume()
 {
-    protected:
-        Node();
+}
 
-    public:
-        ~Node();
-
-        void draw();
-
-        void addChild(SpatialHandle child);
-        void removeChild(SpatialHandle child);
-
-        static NodeHandle create();
-    protected:
-        virtual void updateWorldData();
-        virtual void updateWorldBound();
-
-        std::vector<SpatialHandle> children; 
-};
+BoundingVolume::~BoundingVolume()
+{
+}
 
 }
 }
-
-#endif
-

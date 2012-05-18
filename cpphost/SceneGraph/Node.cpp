@@ -32,6 +32,7 @@ namespace SceneGraph {
 
 Node::Node()
 {
+    setObjectName("Node");
 }
 
 Node::~Node()
@@ -111,8 +112,28 @@ void Node::updateWorldData()
         SpatialHandle child = *iter;
         if(child)
         {
-            child->updateGeometry(false);
+            child->updateGeometryState(false);
         }
+    }
+}
+
+void Node::updateWorldBound()
+{
+    if(children.size() < 1)
+        return;
+
+    std::vector<SpatialHandle>::iterator iter = children.begin();
+
+    SpatialHandle child = *iter;
+    if(!child) return;
+    worldBound->copyFrom(child->worldBound);
+    ++iter;
+
+    for(; iter != children.end(); ++iter)
+    {
+        SpatialHandle child = *iter;
+        if(child)
+            worldBound->growToContain(child->worldBound);
     }
 }
 

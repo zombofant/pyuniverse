@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Node.hpp
+File name: BoundingSphere.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,41 +23,36 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_SCENEGRAPH_NODE_H
-#define _PYUNI_SCENEGRAPH_NODE_H
+#ifndef _PYUNI_SCENEGRAPH_BOUNDINGSPHERE_H
+#define _PYUNI_SCENEGRAPH_BOUNDINGSPHERE_H
 
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
 
-#include "Spatial.hpp"
+#include "Math/Matrices.hpp"
+#include "BoundingVolume.hpp"
 
 namespace PyUni {
 namespace SceneGraph {
 
-class Node;
-
-typedef boost::shared_ptr<Node> NodeHandle;
-
-class Node : public Spatial
+class BoundingSphere : public BoundingVolume
 {
-    protected:
-        Node();
-
     public:
-        ~Node();
+        BoundingSphere();
+        ~BoundingSphere();
 
-        void draw();
+        virtual void computeFromVertices(float *vertices);
+        virtual void transform(Matrix4 transformation, BoundingVolume *target);
+        //virtual int onSideOfPlane(const Plane3 plane) const = 0;
+        virtual bool intersects(const Vector3 origin, const Vector3 direction) const;
+        virtual bool intersects(const BoundingVolume *other) const;
+        virtual void copyFrom(const BoundingVolume *other);
+        virtual void growToContain(const BoundingVolume *other);
 
-        void addChild(SpatialHandle child);
-        void removeChild(SpatialHandle child);
-
-        static NodeHandle create();
     protected:
-        virtual void updateWorldData();
-        virtual void updateWorldBound();
-
-        std::vector<SpatialHandle> children; 
+        float _radius;
+        Vector3 _center;
 };
 
 }

@@ -31,12 +31,14 @@ named in the AUTHORS file.
 #include "GL/GeometryBuffer.hpp"
 #include "GL/StateManagement.hpp"
 #include "Spatial.hpp"
+#include "BoundingSphere.hpp"
 
 namespace PyUni {
 namespace SceneGraph {
 
 typedef std::unordered_map<PyUni::GL::StateGroupHandle, PyUni::GL::VertexIndexListHandle> VertexMap;
 typedef boost::shared_ptr<VertexMap> VertexMapHandle;
+typedef boost::shared_ptr<BoundingSphere> BoundingSphereHandle;
 
 class Leaf;
 
@@ -46,10 +48,16 @@ class Leaf: public Spatial
 {
     protected:
         Leaf();
+
     protected:
+        virtual void updateModelBound();
+        virtual void updateWorldBound();
+
+        BoundingSphereHandle _modelBound;
         VertexMapHandle _vertexMap;
+
     public:
-        void draw();
+        virtual void draw();
         VertexMapHandle getVertexMap() { return _vertexMap; };
 };
 

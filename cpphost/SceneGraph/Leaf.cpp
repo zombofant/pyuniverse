@@ -35,6 +35,7 @@ namespace SceneGraph {
 
 Leaf::Leaf():
     Spatial::Spatial(),
+    _modelBound(new BoundingSphere()),
     _vertexMap(new VertexMap())
 {
 }
@@ -42,6 +43,15 @@ Leaf::Leaf():
 void Leaf::draw()
 {
     glLoadMatrixd(worldTransformation.coeff);
+}
+
+void Leaf::updateModelBound()
+{
+}
+
+void Leaf::updateWorldBound()
+{
+    _modelBound->transform(worldTransformation, worldBound);
 }
 
 }

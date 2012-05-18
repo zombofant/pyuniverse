@@ -28,16 +28,20 @@ named in the AUTHORS file.
 #include <iostream>
 #include <GL/glew.h>
 
+#include "BoundingSphere.hpp"
+
 namespace PyUni {
 namespace SceneGraph {
 
 Spatial::Spatial():
-    _parent()
+    worldNeedsUpdate(true), _parent(), _objectName("Spatial")
 {
+    worldBound = new BoundingSphere();
 }
 
 Spatial::~Spatial()
 {
+    delete worldBound;
 }
 
 SpatialHandle Spatial::getParent()
@@ -50,22 +54,36 @@ void Spatial::setParent(SpatialHandle s)
     _parent = s;
 }
 
-void Spatial::updateGeometry(bool initiator)
+void Spatial::updateGeometryState(bool initiator)
 {
     updateWorldData();
+    updateWorldBound();
+    if(initiator)
+    {
+        advertiseBoundUpwards();
+    }
+}
+
+void Spatial::updateBoundState()
+{
+    updateWorldBound();
+    advertiseBoundUpwards();
 }
 
 void Spatial::updateWorldData()
 {
     SpatialHandle p = getParent();
 
-    if(p.get())
+    if(worldNeedsUpdate)
     {
-        worldTransformation = localTransformation*p->worldTransformation;
-    }
-    else
-    {
-        worldTransformation = localTransformation;
+        if(p.get())
+        {
+            worldTransformation = localTransformation*p->worldTransformation;
+        }
+        else
+        {
+            worldTransformation = localTransformation;
+        }
     }
 }
 
@@ -106,7 +124,19 @@ void Spatial::resetTransformation()
 
 void Spatial::applyTransformation()
 {
+    // FIXME this will be replaced by an appropriate state soon
     glLoadMatrixd(worldTransformation.coeff);
+}
+
+void Spatial::advertiseBoundUpwards()
+{
+    SpatialHandle p = getParent();
+
+    if(p.get())
+    {
+        p->updateWorldBound();
+        p->advertiseBoundUpwards();
+    }
 }
 
 }
