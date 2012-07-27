@@ -6,3 +6,6 @@
 	path = docs
 	url = ssh://git.sotecware.net/PythonicUniverse-docs
 	branch = devel
+[submodule "PyEngine"]
+	path = PyEngine
+	url = https://github.com/zombofant/pyengine
