@@ -29,34 +29,34 @@ named in the AUTHORS file.
 #include <cassert>
 #include <boost/python.hpp>
 
-#include "IO/Log.hpp"
-#include "IO/FileStream.hpp"
-#include "IO/StdIOStream.hpp"
+#include "CEngine/IO/Log.hpp"
+#include "CEngine/IO/FileStream.hpp"
+#include "CEngine/IO/StdIOStream.hpp"
 
-#include "WindowInterface/Display.hpp"
-#include "WindowInterface/Window.hpp"
-#include "WindowInterface/X11/X11Display.hpp"
+#include "CEngine/WindowInterface/Display.hpp"
+#include "CEngine/WindowInterface/Window.hpp"
+#include "CEngine/WindowInterface/X11/X11Display.hpp"
 
-#include "PythonInterface/Package.hpp"
-#include "PythonInterface/CairoHelpers.hpp"
+#include "CEngine/PythonInterface/Package.hpp"
+#include "CEngine/PythonInterface/CairoHelpers.hpp"
 
-PyUni::Display *disp = 0;
+PyEngine::Display *disp = 0;
 
 int main(int argc, char** argv) {
-    PyUni::StreamHandle xmlFile(new PyUni::FileStream("log.xml", PyUni::OM_WRITE, PyUni::WM_OVERWRITE));
-    PyUni::log->addSink(PyUni::LogSinkHandle(new PyUni::LogStreamSink(PyUni::All, PyUni::stdout)));
-    PyUni::log->logf(PyUni::Debug, "Set up stdout sink");
-    PyUni::log->addSink(PyUni::LogSinkHandle(new PyUni::LogXMLSink(PyUni::All & (~PyUni::Debug), xmlFile, "log.xsl")));
-    PyUni::log->logf(PyUni::Debug, "Set up xml sink");
-    PyUni::log->logf(PyUni::Information, "Log system started up successfully.");
+    PyEngine::StreamHandle xmlFile(new PyEngine::FileStream("log.xml", PyEngine::OM_WRITE, PyEngine::WM_OVERWRITE));
+    PyEngine::log->addSink(PyEngine::LogSinkHandle(new PyEngine::LogStreamSink(PyEngine::All, PyEngine::stdout)));
+    PyEngine::log->logf(PyEngine::Debug, "Set up stdout sink");
+    PyEngine::log->addSink(PyEngine::LogSinkHandle(new PyEngine::LogXMLSink(PyEngine::All & (~PyEngine::Debug), xmlFile, "log.xsl")));
+    PyEngine::log->logf(PyEngine::Debug, "Set up xml sink");
+    PyEngine::log->logf(PyEngine::Information, "Log system started up successfully.");
     try
     {
-        PyUni::addCUniToInittab();
+        PyEngine::addCUniToInittab();
         Py_Initialize();
         PySys_SetArgv(argc, argv);
         // this must happen after python was initialized. We're loading
         // a module here ;)
-        PyUni::setupCairoHelpers();
+        PyEngine::setupCairoHelpers();
 
         boost::python::object cuni_window_namespace = boost::python::import("_cuni_window").attr("__dict__");
 
@@ -68,11 +68,11 @@ int main(int argc, char** argv) {
         // platform?
         // Boost needs the explicit type for casting, but it would be
         // nice to force it somehow to do the right thing.
-        PyUni::X11Display *x11 = new PyUni::X11Display();
+        PyEngine::X11Display *x11 = new PyEngine::X11Display();
         disp = x11;
 
         cuni_window_namespace["display"] = x11;
-        cuni_log_namespace["server"] = PyUni::logHandle;
+        cuni_log_namespace["server"] = PyEngine::logHandle;
 
         std::string str;
         {
@@ -83,11 +83,11 @@ int main(int argc, char** argv) {
             str = std::string(s.str());
         }
         exec(str.c_str(), main_namespace);
-        delete PyUni::log;
+        delete PyEngine::log;
     }
     catch (boost::python::error_already_set const&)
     {
-        delete PyUni::log;
+        delete PyEngine::log;
         PyErr_Print();
         return 1;
     }

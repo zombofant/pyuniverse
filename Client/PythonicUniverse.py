@@ -26,11 +26,11 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-import CUni
-import CUni.GL as CGL
-import CUni.SceneGraph as CSceneGraph
-import CUni.Window.key as key
-import CUni.Pango as Pango
+import Engine.CEngine
+import Engine.CEngine.GL as CGL
+import Engine.CEngine.SceneGraph as CSceneGraph
+import Engine.CEngine.Window.key as key
+import Engine.CEngine.Pango as Pango
 
 import cairo
 

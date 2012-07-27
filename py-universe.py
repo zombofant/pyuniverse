@@ -38,8 +38,9 @@ OpenGL.ERROR_ON_COPY = True
 if __name__ == '__main__':
     import argparse
     import sys
-    import CUni.Window
-    from CUni.Log import server as log, Severity
+    sys.path.append("PyEngine")
+    import Engine.CEngine.Window as CWindow
+    from Engine.CEngine.Log import server as log, Severity
     from Client.PythonicUniverse import PythonicUniverse
 
     parser = argparse.ArgumentParser()
@@ -73,7 +74,7 @@ if __name__ == '__main__':
     args = parser.parse_args(sys.argv[1:])
     
     log.log(Severity.Information, "Python initialized")
-    app = PythonicUniverse(CUni.Window.display)
+    app = PythonicUniverse(CWindow.display)
     if args.profile:
         import cProfile
         log.log(Severity.Warning, "Running in cProfile mode")
