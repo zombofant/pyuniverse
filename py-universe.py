@@ -29,7 +29,6 @@ Nothing yet.
 """
 
 from __future__ import unicode_literals, print_function, division
-from our_future import *
 
 # global PyOpenGL flags MUST ONLY be set here.
 import OpenGL
