@@ -44,7 +44,7 @@ PyEngine::Display *disp = 0;
 
 int main(int argc, char** argv) {
     PyEngine::StreamHandle xmlFile(new PyEngine::FileStream("log.xml", PyEngine::OM_WRITE, PyEngine::WM_OVERWRITE));
-    PyEngine::log->addSink(PyEngine::LogSinkHandle(new PyEngine::LogStreamSink(PyEngine::All, PyEngine::stdout)));
+    PyEngine::log->addSink(PyEngine::LogStdOutSink(PyEngine::All));
     PyEngine::log->logf(PyEngine::Debug, "Set up stdout sink");
     PyEngine::log->addSink(PyEngine::LogSinkHandle(new PyEngine::LogXMLSink(PyEngine::All & (~PyEngine::Debug), xmlFile, "log.xsl")));
     PyEngine::log->logf(PyEngine::Debug, "Set up xml sink");
