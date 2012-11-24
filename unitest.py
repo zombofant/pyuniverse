@@ -25,6 +25,8 @@
 # authors named in the AUTHORS file.
 ########################################################################
 from __future__ import unicode_literals, print_function, division
+import sys
+sys.path.append("PyEngine")
 from our_future import *
 
 class Colors(object):
