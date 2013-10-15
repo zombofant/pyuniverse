@@ -53,7 +53,7 @@ import Engine.Resources.ModelLoader
 import Engine.Resources.CSSLoader
 import Engine.Resources.MaterialLoader
 import Engine.Resources.ShaderLoader
-from Engine.GL import makePOT
+from Engine.GL import make_pot
 from Engine.GL.Shader import Shader
 from Engine.GL.RenderModel import RenderModel
 from Engine.GL.Texture import Texture2D
@@ -117,7 +117,7 @@ class PythonicUniverse(Application):
         ResourceManager(vfs)
 
         self.theme = Theme()
-        self.theme.addRules(ResourceManager().require("ui.css"))
+        self.theme.add_rules(ResourceManager().require("ui.css"))
 
         mainScreen = self._primaryWidget
 
@@ -181,7 +181,7 @@ class PythonicUniverse(Application):
         w, h = mainScreen.AbsoluteRect.Width, mainScreen.AbsoluteRect.Height
         if hasattr(self, "_cairoSurface") and w == self._cairoSurface.get_width() and h == self._cairoSurface.get_height():
             return
-        potW, potH = makePOT(w), makePOT(h)
+        potW, potH = make_pot(w), make_pot(h)
 
         self.cairoTexCoords = (w / potW, h / potH)
 
